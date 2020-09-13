@@ -1,5 +1,5 @@
 /* *****************************************************************************
-   Biblioteca CLMC
+   Biblioteca de funcoes CLMC
    *****************************************************************************
    E-mail: ismaellxd@gmail.com
    Site: https://ismaeldamiao.github.io/
@@ -61,6 +61,7 @@ double CalcEnergiaInicial(int,double*,double*,double*,double**);
 *** */
 int AbrirArquivos(const char *format, ...);
 void EscreverArquivos(double,int,double*,double);
+void FecharArquivos(void);
 
 #define RK4 200
 int rk4(int,double*,double*,double*,double**,double);
@@ -75,31 +76,4 @@ int rk14(int,double*,double*,double*,double**,double);
 #define CLMC_ERRO_ARQUIVO 3
 #define CLMC_ERRO_NAN 4
 
-/* ***
-   Funcao para definir os acoplamentos entre as massas
-   CLMC_acoplamento.c
-*** */
-//int acoplamento(double,double,double);
-
-/* ***
-   Funcao que calcula a dinamica do sistema no tempo t=0
-   CLMC_PVI.c
-*** */
-//int PVI(void);
-
-/* ***
-   Funcoes utilizadas para resolver a EDO
-   CLMC_rk4.c
-   CLMC_rk8.c
-   CLMC_rk14.c
-   CLMC_resolucao.c
-*** */
-/*
-int rk4(void);
-int rk8(void);
-int rk14(void);
-int abm8(void);
-int sistema();
-int call_sistema();
-int ModosNormais(void);*/
 #endif // CLMC_H

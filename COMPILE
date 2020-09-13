@@ -53,12 +53,10 @@ else
          cd ../
          rm -r tmp
          exit 0
-      fi
-      if [ "$arg" == "help" ]; then
+      elif [ "$arg" == "help" ] || [ "$arg" == "h" ]; then
          usage
          exit 0
-      fi
-      if [ "$arg" == "x" ]; then
+      elif [ "$arg" == "x" ]; then
          compile
          if ! [ -d data ]; then env mkdir data; fi
          cd data

@@ -1,5 +1,11 @@
 /* *****************************************************************************
-   Programa para alguma coisa.
+   Programa para calcular a dinamica dos modos de vibracao em uma cadeia
+   linear (unidimencional) e calcular medidas de localizacao da energia na
+   cadeia.
+   
+   As equacoes de hamilton podem ser resolvidas usando os metodos de
+   Runge-Kutta de 4a, 8a e 14a ordem.
+
    if ! [ -x COMPILE ]; then chmod 755 COMPILE; fi
    ./COMPILE x; echo $?
    *****************************************************************************
@@ -85,6 +91,7 @@ int main(int argc, char *argv[]){
       ESTADO = rk14(N, M, x, P, eta, H0);
    }
 
+   FecharArquivos();
 
    if(ESTADO != CLMC_SUCESSO) return ESTADO;
    return CLMC_SUCESSO;
