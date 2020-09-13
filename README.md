@@ -53,5 +53,5 @@ que deve ser utilizado para configurar o programa, basta alterar o valor das mac
 ## Estudando
 
 Ao olhar o código fonte sugiro que começe pelo arquivo [main.c](main.c) e tenha o mente o que quer aprender. Por exemplo, se você quiser aprender sobre o
-Runge-Kutta de 4ª ordem veja o [main.c](main.c) para entender o que o programa faz e depois veja o arquivo [rk4.c](rk4.c), não há necessidade
+Runge-Kutta de 4ª ordem veja o [main.c](main.c) para entender o que o programa faz e depois veja o arquivo [CLMC_rk4.c](CLMC_rk4.c), não há necessidade
 de olhar todos os arquivos do programa.
