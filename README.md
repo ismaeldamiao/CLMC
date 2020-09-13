@@ -1,5 +1,14 @@
-# CLMC
+# CLMC - beta 0.1
 Cadeia Linear de Massas Correlacionadas
+
+Este programa calcula a dinâmica dos modos de vibração em uma cadeia linear (unidimencional), calcula medidas de localização da energia na cadeia.
+
+É possível resolver o **problema de valor inicial** com diversos metodos iterativos e, em casos particulares, é possível encontrar os modos normais de
+vibração e as autofrequências.
+
+Para entender a física no problema veja [CLMC.pdf](CLMC.pdf).
+
+O programa ainda está em versão de de teste (beta) e nem todas as funções estão disponíveis ou são completamente funcionais.
 
 ## Download
 
@@ -17,13 +26,19 @@ unzip master.zip
 
 ## Compilando
 
-Para compilar entre no diretório CLMC e use o comando
+Para compilar entre no diretório CLMC-master e dê permissão de execução para o script [COMPILE](COMPILE)
+
+```
+chmod 755 COMPILE
+```
+
+E execute ele
 
 ```
 ./COMPILE
 ```
 
-Se quiser executar imediatamente após compilar use
+Se quiser executar o CLMC imediatamente após compilar use
 
 ```
 ./COMPILE x
