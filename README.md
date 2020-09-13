@@ -1,4 +1,4 @@
-# CLMC - beta 0.1
+# CLMC - beta 0.2
 Cadeia Linear de Massas Correlacionadas
 
 Este programa calcula a dinâmica dos modos de vibração em uma cadeia linear (unidimencional), calcula medidas de localização da energia na cadeia.
