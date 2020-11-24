@@ -201,7 +201,7 @@ int rk4(int N, double *M, double *x, double *P, double **eta, double H0){
          xMedio = 0.0;
          for(n = 1; n <= N; ++n){
             f[n] = E[n] / H0;
-            xMedio = (double)n * f[n];
+            xMedio += (double)n * f[n];
          }
 
          /* ***
