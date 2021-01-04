@@ -1,3 +1,5 @@
+[![Tip Me via PayPal](https://img.shields.io/badge/PayPal-tip%20me-green.svg?logo=paypal)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=D66EM3DGU35EE&source=url)
+
 # CLMC - beta 0.2
 Cadeia Linear de Massas Correlacionadas
 
