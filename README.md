@@ -1,6 +1,6 @@
 [![Tip Me via PayPal](https://img.shields.io/badge/PayPal-tip%20me-green.svg?logo=paypal)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=D66EM3DGU35EE&source=url)
 
-# CLMC - beta 0.2
+# CLMC - beta 0.3
 Cadeia Linear de Massas Correlacionadas
 
 Este programa calcula a dinâmica dos modos de vibração em uma cadeia linear (unidimencional), calcula medidas de localização da energia na cadeia.
