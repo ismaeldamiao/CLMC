@@ -1,5 +1,5 @@
 /* *****************************************************************************
-   Funcao para calcular a forca sobre a n-esima particula
+   Funcao para calcular a energia na n-esima particula
    *****************************************************************************
    E-mail: ismaellxd@gmail.com
    Site: https://ismaeldamiao.github.io/
@@ -24,16 +24,15 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
    IN THE SOFTWARE.
 ***************************************************************************** */
-double forca(int n, double xe, double x, double xd){
+const double __um_sexto__ = 1.0/6.0;
+double energia(int n){
    int i = n + 1;
-   double aux[4] = {xd - x, x - xe, 0.0, 0.0};
+   double aux[4] = {x[i] - x[n], x[n] - x[n-1], 0.0, 0.0};
    aux[2] = aux[0]*aux[0];
    aux[3] = aux[1]*aux[1];
    return
-   eta[i][0] * aux[0] +
-   eta[i][1] * aux[2] +
-   eta[i][2] * aux[2]*aux[0] -(
-   eta[n][0] * aux[1] +
-   eta[n][1] * aux[3] +
-   eta[n][2] * aux[3]*aux[1]);
+   0.5 * P[n] * P[n] / M[n] +
+   (eta[i][0] * aux[2] + eta[n][0] * aux[3]) * 0.25 +
+   (eta[i][1] * aux[2]*aux[0] + eta[n][1] * aux[3]*aux[1]) * __um_sexto__ +
+   (eta[i][2] * aux[2]*aux[2] + eta[n][2] * aux[3]*aux[3]) * 0.125;
 }

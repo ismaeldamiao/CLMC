@@ -1,5 +1,5 @@
 /* *****************************************************************************
-   Funcao para calcular a forca sobre a n-esima particula
+   Funcao para calcular a velocidade da n-esima particula
    *****************************************************************************
    E-mail: ismaellxd@gmail.com
    Site: https://ismaeldamiao.github.io/
@@ -24,16 +24,4 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
    IN THE SOFTWARE.
 ***************************************************************************** */
-double forca(int n, double xe, double x, double xd){
-   int i = n + 1;
-   double aux[4] = {xd - x, x - xe, 0.0, 0.0};
-   aux[2] = aux[0]*aux[0];
-   aux[3] = aux[1]*aux[1];
-   return
-   eta[i][0] * aux[0] +
-   eta[i][1] * aux[2] +
-   eta[i][2] * aux[2]*aux[0] -(
-   eta[n][0] * aux[1] +
-   eta[n][1] * aux[3] +
-   eta[n][2] * aux[3]*aux[1]);
-}
+#define velocidade(n, P) ((P) / M[n])
