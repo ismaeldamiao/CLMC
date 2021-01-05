@@ -1,5 +1,5 @@
 /* *****************************************************************************
-   Resolver a EDO usando Runge-Kutta classico de 4a ordem
+   Resolver a EDO usando Runge-Kutta de 8a ordem e 11 estagios
    *****************************************************************************
    E-mail: ismaellxd@gmail.com
    Site: https://ismaeldamiao.github.io/
@@ -24,17 +24,16 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
    IN THE SOFTWARE.
 ***************************************************************************** */
-
 /* *****************************************************************************
    Definicoes
 ***************************************************************************** */
 /* Dicretiacao do Runge-Kutta */
-#define dt 1.0e-3
-#define dt2 0.5e-3
+#define dt 1.0e-2
+#define dt2 0.5e-2
 /* *****************************************************************************
    Funcao do calculo numerico
 ***************************************************************************** */
-int rk4(void){
+int rk8(void){
 
    /* Contadores */
    int i, j, n, contador = 0;
@@ -42,9 +41,11 @@ int rk4(void){
    /* Medidas de localizacao */
    double *f;
    /* Runge-Kutta */
-   double *kP1, *kX1, *kP2, *kX2, *kP3, *kX3, *kP4, *kX4;
+   const int s = 11; /* Quantidade de estagios */
+   double **kP, **kX, **coef;
+   double a[s][s], b[s], c[s];
    double t;
-   const double tf = 0.4 * (double)N, dt6 = dt/6.0;
+   const double tf = 0.4 * (double)N;
    /* Tamanho 'dinamico' da cadeia */
    int n0 = 1, nf = N;
    /* Energia e hamiltoniano */
@@ -52,6 +53,16 @@ int rk4(void){
    /* *** */
    const int N2 = N/2;
    double aux;
+
+
+   /* **********
+      Ler a matriz de Runge-Kutta
+   ********** */
+   #include"rk8.h"
+   for(i = 0; i < s; ++i){
+      b[i] *= dt;
+      for(j = 0; j < s; ++j) a[i][j] *= dt;
+   }
 
 
    /* **********
@@ -68,66 +79,48 @@ int rk4(void){
    nf = N2 + 300;
    #endif
 
+
    /* ***
    Alocar memoria para os vetores
    *** */
    i = N+2;
    E = dvetor(i);
    f = dvetor(i);
-   kX1 = dvetor(i);
-   kP1 = dvetor(i);
-   kX2 = dvetor(i);
-   kP2 = dvetor(i);
-   kX3 = dvetor(i);
-   kP3 = dvetor(i);
-   kX4 = dvetor(i);
-   kP4 = dvetor(i);
+   kX = dmatriz(i, s+1);
+   kP = dmatriz(i, s+1);
+   coef = dmatriz(i, 2);
 
    /* ***
    Zerar coeficientes que poderiam atrapalhar o calculo
    *** */
-   i = N+1;
-   kX1[0] = kX2[0] = kX3[0] = kX4[0] = kX1[i] = kX2[i] = kX3[i] = kX4[i] = 0.0;
+   for(n = 0; n <= N; ++n) coef[n][0] = coef[n][1] = 0.0;
 
 
    for(t = dt; t <= tf; t += dt){
       /* ***********************************************************************
-         Rotina do metodo de Runge-kutta de 4a ordem
+         Rotina do metodo de Runge-kutta
       *********************************************************************** */
-      /* K1 */
-      for(n = n0; n <= nf; ++n){
-         i = n + 1;
-         kP1[n] = forca(n, x[n-1], x[n], x[i]);
-         kX1[n] = velocidade(n, P[n]);
-      }
-      /* K2 */
-      for(n = n0; n <= nf; ++n){
-         i = n + 1;
-         j = n - 1;
-         kP2[n] = forca(n,
-         x[j] + dt2 * kX1[j], x[n] + dt2 * kX1[n], x[i] + dt2 * kX1[i]);
-         kX2[n] = velocidade(n, P[n] + dt2 * kP1[n]);
-      }
-      /* K3 */
-      for(n = n0; n <= nf; ++n){
-         i = n + 1;
-         j = n - 1;
-         kP3[n] =forca(n,
-         x[j] + dt2 * kX2[j], x[n] + dt2 * kX2[n], x[i] + dt2 * kX2[i]);
-         kX3[n] = velocidade(n, P[n] + dt2 * kP2[n]);
-      }
-      /* K4 */
-      for(n = n0; n <= nf; ++n){
-         i = n + 1;
-         j = n - 1;
-         kP4[n] =forca(n,
-         x[j] + dt * kX3[j], x[n] + dt * kX3[n], x[i] + dt * kX3[i]);
-         kX4[n] = velocidade(n, P[n] + dt * kP3[n]);
-      }
+      for(i = 0; i < s; ++i){
+      
+         for(n = n0; n <= nf; ++n) coef[n][0] = coef[n][1] = 0.0;
 
+         for(n = n0; n <= nf; ++n){
+            for(j = 0; j < i; ++j){
+               coef[n][0] += a[i][j] * kX[n][j];
+               coef[n][1] += a[i][j] * kP[n][j];
+            }
+         }
+         for(n = n0; n <= nf; ++n){
+            kP[n][i] = forca(n,
+            x[n-1] + coef[n-1][0], x[n] + coef[n][0], x[n+1] + coef[n+1][0]);
+            kX[n][i] = velocidade(n, P[n] + coef[n][1]);
+         }
+      }
       for(n = n0; n <= nf; ++n){
-         x[n] += (kX1[n] + 2.0*kX2[n] + 2.0*kX3[n] + kX4[n]) * dt6;
-         P[n] += (kP1[n] + 2.0*kP2[n] + 2.0*kP3[n] + kP4[n]) * dt6;
+         for(i = 0; i < s; ++i){
+            P[n] += b[i] * kP[n][i];
+            x[n] += b[i] * kX[n][i];
+         }
       }
 
       /* ***********************************************************************
