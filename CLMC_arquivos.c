@@ -24,50 +24,47 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
    IN THE SOFTWARE.
 ***************************************************************************** */
-
-/* *****************************************************************************
-   Bibliotecas
-***************************************************************************** */
-#include<stdio.h>
 /* *****************************************************************************
    Variaveis globais
 ***************************************************************************** */
-FILE *fsig, *fE;
+FILE *arquivo_energia, *arquivo_dispersao;
 
-void AbrirArquivos(const char *format, ...){
+void AbrirArquivos(long int semente, const char *format, ...){
    va_list arg;
-   char tmp[500];
-   char NomeArquivo[200];
+   char tmp[512], cmd[512];
+   char NomeArquivo[512];
 
    va_start(arg, format);
    vsprintf(tmp, format, arg);
 
-   sprintf(NomeArquivo, "Energia_%s.dat", tmp);
-   fE = fopen(NomeArquivo, "w");
+   sprintf(cmd, "! [ -d %s ] && env mkdir %s", tmp, tmp);
+   system(cmd);
 
-   sprintf(NomeArquivo, "Sigma_%s.dat", tmp);
-   fsig = fopen(NomeArquivo, "w");
+   sprintf(cmd,
+   "! [ -e info.txt ] && echo \"N=%d\nALPHA=%g\nV0=%g\nETA2=%g\nETA3=%g\nETA4=%g\" >> %s/info.txt",
+   N, __ALPHA__, __V0__, __ETA2__, __ETA3__, __ETA4__, tmp);
+   system(cmd);
+
+   sprintf(NomeArquivo, "%s/energia_%ld.dat", tmp, semente);
+   arquivo_energia = fopen(NomeArquivo, "w");
+
+   sprintf(NomeArquivo, "%s/dispersao_%ld.dat", tmp, semente);
+   arquivo_dispersao = fopen(NomeArquivo, "w");
 
    return;
 }
 
-void EscreverArquivos(double t, int N, double *E, double sigma){
+void EscreverArquivos(double t){
    int n;
-   for(n = 1; n <= N; ++n){
-      fprintf(fE, "%g %d %g\n", t, n, E[n]);
-      //fprintf(fX, "%g %d %g\n", t, iM, x[iM]);
-   }
-   fprintf(fE, "\n");
-   //fprintf(fX, "\n");
-   fprintf(fsig, "%5.4g %g\n", t, sigma);
-
+   for(n = 1; n <= N; ++n)
+   fprintf(arquivo_energia, "%g %d %g\n", t, n, E[n]);
+   fprintf(arquivo_energia, "\n");
+   fprintf(arquivo_dispersao, "%5.4g %g %g\n", t, sigma, Z);
    return;
 }
 
 void FecharArquivos(void){
-
-   fclose(fE);
-   fclose(fsig);
-
+   fclose(arquivo_energia);
+   fclose(arquivo_dispersao);
    return;
 }

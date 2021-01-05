@@ -27,53 +27,61 @@
 #ifndef CLMC_H
 #define CLMC_H 0
 
-/* ***
-   Funcoes do Numerical Recipes
-   ran1.c
-   tqli.c
-   CLMC_memoria.c
-*** */
-double ran1(long int*);
-int tqli(double*, double*, int, double**);
-double pythag(double, double);
-double **dmatriz(const int, const int);
-double *dvetor(const int);
-
-/* ***
-   CLMC_correlacoes.c
-*** */
-double *DefMassas(int,double,long int,int);
-
-/* ***
-   CLMC_acoplamento.c
-*** */
-double **acoplamento(double,double,double,int);
-
-/* ***
-   CLMC_PVI.c
-*** */
-double *DefPosicaoInicial(const int);
-double *DefMomentoInicial(int,double*,double);
-double CalcEnergiaInicial(int,double*,double*,double*,double**);
-
-/* ***
-   CLMC_arquivos.c
-*** */
-int AbrirArquivos(const char *format, ...);
-void EscreverArquivos(double,int,double*,double);
-void FecharArquivos(void);
+#include<stdio.h>
+#include<stdlib.h>
+#include<math.h>
 
 #define RK4 200
-int rk4(int,double*,double*,double*,double**,double);
-
 #define RK8 201
-int rk8(int,double*,double*,double*,double**,double);
-
 #define RK14 202
-int rk14(int,double*,double*,double*,double**,double);
+#include "CLMC_configuracao.h"
 
 #define CLMC_SUCESSO 0
 #define CLMC_ERRO_ARQUIVO 3
 #define CLMC_ERRO_NAN 4
+#define CLMC_ERRO_PRECISAO 5
+/* *****************************************************************************
+   Formulas e funcoes matematicas
+***************************************************************************** */
+#define DeltaDeKronecker(x, y) ((x) != (y) ? 0.0 : 1.0)
+#define MAX(x, y) ((x) > (y) ? (x) : (y))
+#define MIN(x, y) ((x) < (y) ? (x) : (y))
+#ifndef abs
+   #define abs(x) ((x) >= 0 ? (x) : -(x))
+#endif
+
+/* *****************************************************************************
+   Funcoes do Numerical Recipes
+***************************************************************************** */
+#include "numerical_recipes/ran1.c"
+#include "numerical_recipes/tqli.c"
+#include "numerical_recipes/alocar.c"
+/* *****************************************************************************
+   Funcoes que preparam o sistema fisico
+***************************************************************************** */
+#include "sistema_inicial/massas.c"
+#include "sistema_inicial/acoplamentos.c"
+#include "sistema_inicial/posicoes.c"
+#include "sistema_inicial/momentos.c"
+/* *****************************************************************************
+   Funcoes relacionadas com o hamiltoniano ou com suas equacoes
+***************************************************************************** */
+#include "hamiltoniano/energia.c"
+#include "hamiltoniano/forca.c"
+#include "hamiltoniano/velocidade.c"
+/* *****************************************************************************
+   Funcoes para administrar os arquivos de dados
+***************************************************************************** */
+#include "CLMC_arquivos.c"
+/* *****************************************************************************
+   Funcoes para resolver a evolucao temporal do sistema fisico
+***************************************************************************** */
+#if __METODO__ == RK4
+   #include "solucao_temporal/rk4.c"
+#elif __METODO__ == RK8
+   #include "solucao_temporal/rk8.c"
+#elif __METODO__ == RK14
+   #include "solucao_temporal/rk14.c"
+#endif
 
 #endif // CLMC_H

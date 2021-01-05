@@ -8,6 +8,8 @@
 
    if ! [ -x COMPILE ]; then chmod 755 COMPILE; fi
    ./COMPILE x; echo $?
+
+   clang main.c -lm -o clmc
    *****************************************************************************
    E-mail: ismaellxd@gmail.com
    Site: https://ismaeldamiao.github.io/
@@ -32,11 +34,12 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
    IN THE SOFTWARE.
 ***************************************************************************** */
+double *M, **eta, *x, *P, *E;
+double H0, sigma, Z;
 /* *****************************************************************************
    Bibliotecas
 ***************************************************************************** */
 #include"CLMC.h"
-#include"CLMC_configuracao.h"
 /* *****************************************************************************
    Declaracoes globais
 ***************************************************************************** */   
@@ -45,54 +48,41 @@
 ***************************************************************************** */
 int main(int argc, char *argv[]){
 
-   double **eta, *M, *x, *P, H0;
-   int ESTADO;
-   long int semente[2] = {-Semente, Semente};
+   int ESTADO, n;
+   long int semente;
 
-   /* **********
-   As massas serao mapeadas/escolhidas com base em series.
-   Ver arquivo CLMC_correlacoes.c
-   ********** */
-   M = DefMassas(criterio, alpha, semente[0], N);
+   if(argc < 2) semente = 1;
+   else semente = atol(argv[1]);
+   if(semente < 1) semente = -semente;
 
-   /* **********
-   Os termos de acoplamento, por padrao, sao todos iguais para cada potencial
-   eta2 eh o termo de acoplamento do potencial harmonico enquanto que
-   eta3 e eta4 sao dos potenciais anarmonicos.
-   Ver arquivo CLMC_PVI.c
-   ********** */
-   eta = acoplamento(eta2, eta3, eta4, N);
+   /* **************************************************************************
+      Primeiro preparo o sistema fisico
+   ************************************************************************** */
+   M = __massas__(semente); /* Massas das particulas/atomos */
+   eta = __acoplamentos__(); /* Constantes de acoplamento */
+   x = __posicoes__(); /* Posicoes iniciais */
+   P = __momentos__(); /* Momentos iniciais */
+   /* **************************************************************************
+      Preparar arquivos de dados a serem escritos
+   ************************************************************************** */
+   AbrirArquivos(semente,
+   "%iMassas_%galpha_%gV0_%geta2_%geta3_%geta4",
+   N, __ALPHA__, __V0__, __ETA2__, __ETA3__, __ETA4__);
+   /* **************************************************************************
+      Resolver a evolucao temporal do sistema fisico
+   ************************************************************************** */
+   H0 = 0.0;/* Hamiltoniano no tempo t = 0 */
+   for(n = 1; n <= N; ++n) H0 += energia(n);
 
-   /* **********
-   As posicoes e os momentos iniciais sao todos nulos, exceto o momento
-   na central da cadeia, ele eh o produto de M[n] com a velocidade v0
-   Ver arquivo CLMC_PVI.c
-   ********** */
-   x = DefPosicaoInicial(N);
-   P = DefMomentoInicial(N, M, v0);
-
-   /* **********
-   Calcula o valor do hamiltoniano no instante inicial (t=0)
-   Ver arquivo CLMC_PVI.c
-   ********** */
-   H0 = CalcEnergiaInicial(N, M, x, P, eta);
-
-   /* **********
-   Ver arquivo CLMC_arquivos.c
-   ********** */
-   AbrirArquivos("%iMassas_%galpha_%gV0_%geta2_%geta3_%geta4_%02ldsemente",
-      N, alpha, v0, eta2, eta3, eta4, semente[1]);
-
-   if(metodo == RK4){
-      ESTADO = rk4(N, M, x, P, eta, H0);
-   }else if(metodo == RK8){
-      ESTADO = rk8(N, M, x, P, eta, H0);
-   }else if(metodo == RK14){
-      ESTADO = rk14(N, M, x, P, eta, H0);
-   }
+   #if __METODO__ == RK4
+      ESTADO = rk4();
+   #elif __METODO__ == RK8
+      ESTADO = rk8();
+   #elif __METODO__ == RK14
+      ESTADO = rk14();
+   #endif
 
    FecharArquivos();
 
-   if(ESTADO != CLMC_SUCESSO) return ESTADO;
-   return CLMC_SUCESSO;
+   return ESTADO;
 }

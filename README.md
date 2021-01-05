@@ -16,34 +16,66 @@ O programa ainda está em versão de de teste (beta) e nem todas as funções es
 
 Para baixar use o comando
 
-```
+```bash
 wget https://github.com/ismaeldamiao/CLMC/archive/master.zip
 ```
 
 Para descomprimir use o comando
 
-```
+```bash
 unzip master.zip
 ```
 
-## Compilando
+## Compilando e executando
 
-Para compilar entre no diretório CLMC-master e dê permissão de execução para o script [COMPILE](COMPILE)
+Antes de compilar se lembre de configurar seu sistema físico no arquivo [CLMC_configuracao.h](CLMC_configuracao.h).
 
-```
-chmod 755 COMPILE
-```
+Para compilar primeiro entre no diretório CLMC-master com `cd CLMC-master` e depois compile com um dos dois comandos a seguir.
 
-E execute ele
-
-```
-./COMPILE
+* Com o clang
+```bash
+clang main.c -lm -o clmc
 ```
 
-Se quiser executar o CLMC imediatamente após compilar use
-
+* Com o gcc
+```bash
+gcc main.c -lm -o clmc
 ```
-./COMPILE x
+
+Para executar se lembre de passar uma semente como argumento (`1` no exemplo abaixo).
+
+```bash
+./clmc 1
+```
+
+Se quiser calcular mais de uma semente para um mesmo sistema utilize o script [loop.sh](scripts/loop.sh) (depois de compilar) para executar,
+informando a primeira e a última semente como argumentos (`1` até `10` no exemplo abaixo).
+
+```bash
+bash scripts/loop.sh 1 10
+```
+
+## Plotando
+
+No diretório `scripts` também há um script para plotar os gráficos usando o GNUplot
+(desnecessário informar que, para usá-lo, você deve ter o GNUplot instalado).
+
+A nível de exemplo, suponha que ao executar o programa o diretório de dados que o programa criou se chama
+`300Massas_3alpha_1V0_1eta2_1eta3_0eta4`, você deve navegar até esse diretório usando
+`cd 300Massas_3alpha_1V0_1eta2_1eta3_0eta4`.
+
+* Para plotar os dados referentes a uma unica semente (por exemplo, que vale `1`) use:
+```bash
+bash ../scripts/plot.sh energia_1.dat dispersao_1.dat
+```
+
+* Se você rodou várias sementes, antes de plotar tire a média delas:
+```bash
+wget -q https://github.com/ismaeldamiao/avulsos/raw/master/c/media/media.c
+clang media.c -lm -o media.o # Ou use o gcc
+./media.o "energia_*.dat"
+./media.0 "dispersao_*.dat"
+bash ../scripts/plot.sh
 ```
 
 ## Configurando
