@@ -87,16 +87,5 @@ que deve ser utilizado para configurar o programa, basta alterar o valor das mac
 ## Estudando
 
 Ao olhar o código fonte sugiro que começe pelo arquivo [main.c](main.c) e tenha o mente o que quer aprender. Por exemplo, se você quiser aprender sobre o
-Runge-Kutta de 4ª ordem veja o [main.c](main.c) para entender o que o programa faz e depois veja o arquivo [CLMC_rk4.c](CLMC_rk4.c), não há necessidade
+Runge-Kutta de 4ª ordem veja o [main.c](main.c) para entender o que o programa faz e depois veja o arquivo [CLMC_rk4.c](resolucao_numerica/rk4.c), não há necessidade
 de olhar todos os arquivos do programa.
-
-## Plotando
-
-Use os scripts do diretório gnuplot para plotar usando gnuplot. Por exemplo, se o arquivo de dados da energia gerado pelo CLMC se chamar
-`Energia_800Massas_0alpha_1V0_1eta2_1eta3_0eta4_01semente.dat` então você pode usar o script [plot_energia.sh](gnuplot/plot_energia.sh) (lembre de colocar o script no mesmo diretório que o arquivo de dados) para plotar usando o comando
-
-```
-./plot_energia.sh Energia_800Massas_0alpha_1V0_1eta2_1eta3_0eta4_01semente.dat
-```
-
-A saída será uma imagem em formato `.png`.
