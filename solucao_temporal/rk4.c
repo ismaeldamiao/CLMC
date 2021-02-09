@@ -179,6 +179,10 @@ int rk4(void){
          if((E[n0] > 1.0e-20) || (E[nf] > 1.0e-20)){
             n0 -= 30; nf += 30;
          }
+         /* Para garantir que a sub-cadeia nao fique maior que a cadeia */
+         if(nf > N){
+            n0 = 1; nf = N;
+         }
          #endif
 
          /* ***
