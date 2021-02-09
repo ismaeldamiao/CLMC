@@ -74,7 +74,7 @@ bash ../scripts/plot.sh energia_1.dat dispersao_1.dat
 wget -q https://github.com/ismaeldamiao/avulsos/raw/master/c/media/media.c
 clang media.c -lm -o media.o # Ou use o gcc
 ./media.o "energia_*.dat"
-./media.0 "dispersao_*.dat"
+./media.o "dispersao_*.dat"
 bash ../scripts/plot.sh
 ```
 
@@ -89,5 +89,5 @@ que deve ser utilizado para configurar o programa, basta alterar o valor das mac
 Ao olhar o código fonte sugiro que começe pelo arquivo [main.c](main.c) e tenha o mente o que quer aprender.
 Por exemplo, se você quiser aprender sobre o
 Runge-Kutta de 4ª ordem veja o [main.c](main.c) para entender o que o programa faz e depois veja o arquivo
-[CLMC_rk4.c](solucao_temporal/rk4.c), não há necessidade
+[rk4.c](solucao_temporal/rk4.c), não há necessidade
 de olhar todos os arquivos do programa.
