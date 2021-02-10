@@ -40,11 +40,11 @@ void AbrirArquivos(long int semente, const char *format, ...){
    va_start(arg, format);
    vsprintf(tmp, format, arg);
 
-   sprintf(cmd, "[ -d %s ] || env mkdir %s", tmp, tmp);
+   sprintf(cmd, "[ -d '%s' ] || env mkdir '%s'", tmp, tmp);
    system(cmd);
 
    sprintf(cmd,
-   "[ -e \"%s/info.txt\" ] || echo \"N=%d\nALPHA=%g\nV0=%g\nETA2=%g\nETA3=%g\nETA4=%g\" >> \"%s/info.txt\"",
+   "[ -e '%s/info.txt' ] || echo 'N=%d\nALPHA=%g\nV0=%g\nETA2=%g\nETA3=%g\nETA4=%g' >> '%s/info.txt'",
    tmp, N, __ALPHA__, __V0__, __ETA2__, __ETA3__, __ETA4__, tmp);
    system(cmd);
 
