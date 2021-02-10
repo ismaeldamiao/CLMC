@@ -27,9 +27,9 @@
 #ifndef CLMC_H
 #define CLMC_H 0
 
-#include<stdio.h>
-#include<stdlib.h>
-#include<math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
 
 #define RK4 200
 #define RK8 201
