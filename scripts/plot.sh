@@ -40,7 +40,7 @@ set ylabel "Z(t)"
 plot "${DISPERSAO}" using 1:3 w l lt rgb "black"
 
 # ###
-# Sigma
+# Energia
 # ###
 
 set term png size 1920, 1080 font "serif,26" enhanced
