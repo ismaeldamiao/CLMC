@@ -7,14 +7,22 @@ Este programa estuda como a energia se propaga em uma
 cadeia linear (unidimencional) através da dinâmica dos modos de vibração da energia
 e de medidas de localização.
 
-É possível resolver o **problema de valor inicial** com diversos metodos iterativos,
+É possível resolver o **problema de valor inicial** (PVI) com diversos metodos iterativos,
 tais como:
 * Runge-Kutta de 4a, 8a e 14a ordem;
 * Adams-Bashforth-Moulton de 8a e 10a ordem.
 
-Para entender a física no problema veja [CLMC.pdf](CLMC.pdf).
+Disponibilizei este programa como material de aprendizagem para quem tem interesse
+nos diversos métodos de resolução numérica de equações diferenciais ordinárias
+(EDO) associadas a um PVI. Estes métodos podem ser aplicados em equações mais "simples",
+entretanto eu resolvi mostrar como aplica-los em um problema mais extenso para
+resolver um sistema de `N` equações.
 
-O programa ainda está em versão de de teste (beta) e nem todas as funções estão disponíveis ou são completamente funcionais.
+Para entender a física envolvida nesse, bem como para ver mais detalhes
+sobre o programa, veja a [wiki](https://ismaeldamiao.github.io/pt/wiki/clmc/intro/)
+no meu site.
+
+O programa ainda está em versão de teste (beta) e nem todas as funções estão disponíveis ou são completamente funcionais.
 
 ## Download
 
@@ -86,7 +94,7 @@ bash ../scripts/plot.sh
 
 Antes de compilar é possível mudar as condições iniciais do **problema de valor inicial** ou mudar o método como o programa vai resolver o problema.
 É possível mudar também a maneira como as massas se autocorrelacionam. O arquivo [CLMC_configuracao.h](CLMC_configuracao.h) está devidamente comentado e é ele
-que deve ser utilizado para configurar o programa, basta alterar o valor das macros (#define).
+que deve ser utilizado para configurar o programa, basta alterar o valor das macros (`#define`).
 
 ## Estudando
 
