@@ -3,10 +3,14 @@
 # CLMC - beta 0.3
 Cadeia Linear de Massas Correlacionadas
 
-Este programa calcula a dinâmica dos modos de vibração em uma cadeia linear (unidimencional), calcula medidas de localização da energia na cadeia.
+Este programa estuda como a energia se propaga em uma
+cadeia linear (unidimencional) através da dinâmica dos modos de vibração da energia
+e de medidas de localização.
 
-É possível resolver o **problema de valor inicial** com diversos metodos iterativos e, em casos particulares, é possível encontrar os modos normais de
-vibração e as autofrequências.
+É possível resolver o **problema de valor inicial** com diversos metodos iterativos,
+tais como:
+* Runge-Kutta de 4a, 8a e 14a ordem;
+* Adams-Bashforth-Moulton de 8a e 10a ordem.
 
 Para entender a física no problema veja [CLMC.pdf](CLMC.pdf).
 
