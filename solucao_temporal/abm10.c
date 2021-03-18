@@ -29,8 +29,7 @@
    Definicoes
 ***************************************************************************** */
 /* Dicretiacao do Runge-Kutta */
-#define dt 1.0e-2
-#define dt2 0.5e-2
+#define dt 1.0e-3
 /* *****************************************************************************
    Funcao do calculo numerico
 ***************************************************************************** */
@@ -77,10 +76,6 @@ int abm10(void){
    for(i = 0; i < s; ++i){
       b[i] *= dt;
       for(j = 0; j < s; ++j) a[i][j] *= dt;
-   }
-   for(i = 0; i < s_abm; ++i){
-      adams[0][i] *= dt;
-      adams[1][i] *= dt;
    }
 
 
@@ -155,15 +150,15 @@ int abm10(void){
       /* ***********************************************************************
          Rotina do metodo de Adams-Bashforth-Moulton
       *********************************************************************** */
-      for(n = n0; n <= nf; ++n){
-         P_ab[n] = P[n];
-         x_ab[n] = x[n];
-      }
       for(n = n0; n <= nf; ++n){ //AB
+         P_ab[n] = 0.0;
+         x_ab[n] = 0.0;
          for(i = 0; i < s_abm; ++i){
             P_ab[n] += adams[0][i] * kP_abm[n][i];
             x_ab[n] += adams[0][i] * kX_abm[n][i];
          }
+         P_ab[n] = P[n] + P_ab[n] * dt;
+         x_ab[n] = x[n] + x_ab[n] * dt;
       }
       for(n = n0; n <= nf; ++n){
          for(i = 0; i < j; ++i){
@@ -174,10 +169,14 @@ int abm10(void){
          kX_abm[n][j] = velocidade(n, P_ab[n]);
       }
       for(n = n0; n <= nf; ++n){ //AM
+         P_ab[n] = 0.0;
+         x_ab[n] = 0.0;
          for(i = 0; i < s_abm; ++i){
-            P[n] += adams[1][i] * kP_abm[n][i];
-            x[n] += adams[1][i] * kX_abm[n][i];
+            P_ab[n] += adams[1][i] * kP_abm[n][i];
+            x_ab[n] += adams[1][i] * kX_abm[n][i];
          }
+         P[n] += P_ab[n] * dt;
+         x[n] += x_ab[n] * dt;
       }
       /* ***********************************************************************
          Rotina para calcular as medidas de localizacao
