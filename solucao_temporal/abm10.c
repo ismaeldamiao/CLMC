@@ -1,5 +1,6 @@
 /* *****************************************************************************
-   Resolver a EDO usando Runge-Kutta de 14a ordem e 35 estagios
+   Resolver a EDO usando Adams-Bashforth-Moulton de 10 ordem
+   iniciado com Runge-Kutta de 14a ordem e 35 estagios
    *****************************************************************************
    E-mail: ismaellxd@gmail.com
    Site: https://ismaeldamiao.github.io/
@@ -28,15 +29,15 @@
    Definicoes
 ***************************************************************************** */
 /* Dicretiacao do Runge-Kutta */
-#define dt 1.0e-1
-#define dt2 0.5e-1
+#define dt 1.0e-2
+#define dt2 0.5e-2
 /* *****************************************************************************
    Funcao do calculo numerico
 ***************************************************************************** */
-int rk14(void){
+int abm10(void){
 
    /* Contadores */
-   int i, j, n, contador = 0;
+   int i, j, l, n, contador = 0;
    const int contadorMAX = (int)(2.0/dt);
    /* Medidas de localizacao */
    double *f;
@@ -54,6 +55,19 @@ int rk14(void){
    /* *** */
    const int N2 = N/2;
    double aux;
+   double adams[2][s_abm] = 
+   {// 10a ordem
+      // Coeficientes de Adams–Bashforth
+      {-2082753.0/7257600.0, 20884811.0/7257600.0, -94307320.0/7257600.0,
+      252618224.0/7257600.0, -444772162.0/7257600.0, 538363838.0/7257600.0,
+      -454661776.0/7257600.0, 265932680.0/7257600.0, -104995189.0/7257600.0,
+      30277247.0/7257600.0},
+      // Coeficientes de Adams–Moulton
+      {57281.0/7257600.0, -583435.0/7257600.0, 2687864.0/7257600.0,
+      -7394032.0/7257600.0, 13510082.0/7257600.0, -17283646.0/7257600.0,
+      16002320.0/7257600.0, -11271304.0/7257600.0, 9449717.0/7257600.0,
+      2082753.0/7257600.0}
+   };
 
 
    /* **********
@@ -63,6 +77,10 @@ int rk14(void){
    for(i = 0; i < s; ++i){
       b[i] *= dt;
       for(j = 0; j < s; ++j) a[i][j] *= dt;
+   }
+   for(i = 0; i < s_abm; ++i){
+      adams[0][i] *= dt;
+      adams[1][i] *= dt;
    }
 
 
@@ -101,7 +119,7 @@ int rk14(void){
    for(n = 0; n <= N; ++n) coef[n][0] = coef[n][1] = 0.0;
 
 
-   for(l = 0, t = dt; l < s_abm; ++l, t += dt){
+   for(l = 0; l < s_abm; ++l){
       /* ***********************************************************************
          Rotina do metodo de Runge-kutta
       *********************************************************************** */
@@ -133,7 +151,7 @@ int rk14(void){
       }
    }
    j = s_abm-1;
-   for(l = 0, t = dt; l < s_abm; ++l, t += dt){
+   for(t = (double)(s_abm)*dt; t <= tf; t += dt){
       /* ***********************************************************************
          Rotina do metodo de Adams-Bashforth-Moulton
       *********************************************************************** */
@@ -142,9 +160,9 @@ int rk14(void){
          x_ab[n] = x[n];
       }
       for(n = n0; n <= nf; ++n){ //AB
-         for(i = 0; i < s; ++i){
-            P_ab[n] += adams[0][i]*kP_abm[n][i]*dt;
-            x_ab[n] += adams[0][i]*kX_abm[n][i]*dt;
+         for(i = 0; i < s_abm; ++i){
+            P_ab[n] += adams[0][i] * kP_abm[n][i];
+            x_ab[n] += adams[0][i] * kX_abm[n][i];
          }
       }
       for(n = n0; n <= nf; ++n){
@@ -156,9 +174,9 @@ int rk14(void){
          kX_abm[n][j] = velocidade(n, P_ab[n]);
       }
       for(n = n0; n <= nf; ++n){ //AM
-         for(i = 0; i < s; ++i){
-            P[n] += adams[0][i]*kP_abm[n][i]*dt;
-            x[n] += adams[0][i]*kX_abm[n][i]*dt;
+         for(i = 0; i < s_abm; ++i){
+            P[n] += adams[1][i] * kP_abm[n][i];
+            x[n] += adams[1][i] * kX_abm[n][i];
          }
       }
       /* ***********************************************************************
