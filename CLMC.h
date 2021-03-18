@@ -84,9 +84,9 @@
    #include "solucao_temporal/rk8.c"
 #elif __METODO__ == RK14
    #include "solucao_temporal/rk14.c"
-#elif __METODO__ == AMB5
+#elif __METODO__ == ABM5
    #include "solucao_temporal/abm5.c"
-#elif __METODO__ == AMB10
+#elif __METODO__ == ABM10
    #include "solucao_temporal/abm10.c"
 #endif
 
