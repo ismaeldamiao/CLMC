@@ -5,11 +5,6 @@
    
    As equacoes de hamilton podem ser resolvidas usando os metodos de
    Runge-Kutta de 4a, 8a e 14a ordem.
-
-   if ! [ -x COMPILE ]; then chmod 755 COMPILE; fi
-   ./COMPILE x; echo $?
-
-   clang main.c -lm -o clmc
    *****************************************************************************
    E-mail: ismaellxd@gmail.com
    Site: https://ismaeldamiao.github.io/
@@ -80,6 +75,8 @@ int main(int argc, char *argv[]){
       ESTADO = rk8();
    #elif __METODO__ == RK14
       ESTADO = rk14();
+   #elif __METODO__ == ABM10
+      ESTADO = abm10();
    #endif
 
    FecharArquivos();
