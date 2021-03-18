@@ -40,7 +40,9 @@ obedecida a seguinte lista:
 RK4 - Runge-Kutta classico de 4a ordem
 RK8 - Runge-Kutta de 8a ordem
 RK14 - Runge-Kutta de 14a ordem
+ABM5 - Adams-Bashforth-Moulton 5a ordem
+ABM10 - Adams-Bashforth-Moulton 10a ordem
 ********** */
-#define __METODO__ RK14
+#define __METODO__ RK4
 
 #endif
