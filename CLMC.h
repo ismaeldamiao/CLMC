@@ -34,6 +34,8 @@
 #define RK4 200
 #define RK8 201
 #define RK14 202
+#define ABM5 203
+#define ABM10 204
 #include "CLMC_configuracao.h"
 
 #define CLMC_SUCESSO 0
