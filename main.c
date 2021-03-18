@@ -75,6 +75,8 @@ int main(int argc, char *argv[]){
       ESTADO = rk8();
    #elif __METODO__ == RK14
       ESTADO = rk14();
+   #elif __METODO__ == ABM5
+      ESTADO = abm5();
    #elif __METODO__ == ABM10
       ESTADO = abm10();
    #endif
