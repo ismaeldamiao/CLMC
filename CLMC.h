@@ -43,13 +43,16 @@
 #define CLMC_ERRO_NAN 4
 #define CLMC_ERRO_PRECISAO 5
 /* *****************************************************************************
-   Formulas e funcoes matematicas
+   Formulas, constantes e funcoes matematicas
 ***************************************************************************** */
 #define DeltaDeKronecker(x, y) ((x) != (y) ? 0.0 : 1.0)
 #define MAX(x, y) ((x) > (y) ? (x) : (y))
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
 #ifndef abs
    #define abs(x) ((x) >= 0 ? (x) : -(x))
+#endif
+#ifndef M_PI
+   #define M_PI 3.14159265358979323846
 #endif
 
 /* *****************************************************************************

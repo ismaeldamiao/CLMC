@@ -5,6 +5,8 @@
    
    As equacoes de hamilton podem ser resolvidas usando os metodos de
    Runge-Kutta de 4a, 8a e 14a ordem.
+
+   $ clang main.c -std=c99 -O2 -lm -o clmc && ./clmc
    *****************************************************************************
    E-mail: ismaellxd@gmail.com
    Site: https://ismaeldamiao.github.io/
