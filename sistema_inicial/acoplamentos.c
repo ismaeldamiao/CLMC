@@ -26,7 +26,8 @@
 ***************************************************************************** */
 double **__acoplamentos__(){
    int n;
-   double **eta = dmatriz(N+2, 3);
+   double **eta;
+   matriz(N+2, 3, double, eta);
    for(n = 1; n <= N; ++n){
       eta[n][0] = __ETA2__;
       eta[n][1] = __ETA3__;

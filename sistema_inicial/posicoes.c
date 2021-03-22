@@ -26,7 +26,8 @@
 ***************************************************************************** */
 double *__posicoes__(void){
    int n;
-   double *x = dvetor(N+2);
+   double *x;
+   vetor(N+2, double, x);
    for(n = 1; n <= N; ++n) x[n] = 0.0;
    return x;
 }

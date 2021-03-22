@@ -86,7 +86,7 @@ double *MapaBernoulli(long int semente){
    double aux, *X;
    const double b = 1.0e-12, caux = pow(2.0, __ALPHA__-1.0) * (1.0 - 2.0 * b);
    
-   X = dvetor(N+2); /* Alocar memoria */
+   vetor(N+2, double, X); /* Alocar memoria */
    
    X[0] = ran1(&semente);
    for(i = 1; i < N; ++i){
@@ -106,7 +106,7 @@ double *SemNome1(long int semente){
    double *V, M_PI2 = 2.0 * M_PI;
    double phi[Q2], aux1 = 0.0, aux2 = 0.0, var, k, Nr = (double)N, iR;
    
-   V = dvetor(N+2); /* Alocar memoria */
+   vetor(N+2, double, V); /* Alocar memoria */
    
    for(int i = 0; i < Q2; ++i){
       phi[i] = M_PI2 * ran1(&semente);
@@ -135,7 +135,7 @@ double *SemNome2(long int semente){
    double *V;
    int i, n;
    
-   V = dvetor(N+2); /* Alocar memoria */
+   vetor(N+2, double, V); /* Alocar memoria */
    
    vmedio = vmedio2 = 0.0;
    for(i = 1; i <= N; ++i){

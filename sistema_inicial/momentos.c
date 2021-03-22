@@ -26,7 +26,8 @@
 ***************************************************************************** */
 double *__momentos__(){
    int n;
-   double *P = dvetor(N+2);
+   double *P;
+   vetor(N+2, double, P);
    const int N2 = N/2;
    for(n = 1; n <= N; ++n) P[n] = M[n] * __V0__ * DeltaDeKronecker(n, N2);
    return P;
