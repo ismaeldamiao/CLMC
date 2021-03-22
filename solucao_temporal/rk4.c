@@ -72,16 +72,16 @@ int rk4(void){
    Alocar memoria para os vetores
    *** */
    i = N+2;
-   E = dvetor(i);
-   f = dvetor(i);
-   kX1 = dvetor(i);
-   kP1 = dvetor(i);
-   kX2 = dvetor(i);
-   kP2 = dvetor(i);
-   kX3 = dvetor(i);
-   kP3 = dvetor(i);
-   kX4 = dvetor(i);
-   kP4 = dvetor(i);
+   vetor(i, double, E);
+   vetor(i, double, f);
+   vetor(i, double, kX1);
+   vetor(i, double, kP1);
+   vetor(i, double, kX2);
+   vetor(i, double, kP2);
+   vetor(i, double, kX3);
+   vetor(i, double, kP3);
+   vetor(i, double, kX4);
+   vetor(i, double, kP4);
 
    /* ***
    Zerar coeficientes que poderiam atrapalhar o calculo

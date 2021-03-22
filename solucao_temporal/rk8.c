@@ -84,11 +84,11 @@ int rk8(void){
    Alocar memoria para os vetores
    *** */
    i = N+2;
-   E = dvetor(i);
-   f = dvetor(i);
-   kX = dmatriz(i, s+1);
-   kP = dmatriz(i, s+1);
-   coef = dmatriz(i, 2);
+   vetor(i, double, E);
+   vetor(i, double, f);
+   matriz(i, s+1, double, kX);
+   matriz(i, s+1, double, kP);
+   matriz(i, 2, double, coef);
 
    /* ***
    Zerar coeficientes que poderiam atrapalhar o calculo

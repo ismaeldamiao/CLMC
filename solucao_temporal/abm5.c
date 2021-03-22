@@ -92,15 +92,15 @@ int abm5(void){
    Alocar memoria para os vetores
    *** */
    i = N+2;
-   E = dvetor(i);
-   f = dvetor(i);
-   kX = dmatriz(i, s+1);
-   kP = dmatriz(i, s+1);
-   kX_abm = dmatriz(i, s_abm);
-   kP_abm = dmatriz(i, s_abm);
-   x_ab = dvetor(i);
-   P_ab = dvetor(i);
-   coef = dmatriz(i, 2);
+   vetor(i, double, E);
+   vetor(i, double, f);
+   matriz(i, s+1, double, kX);
+   matriz(i, s+1, double, kP);
+   matriz(i, 2, double, coef);
+   matriz(i, s_abm, double, kX_abm);
+   matriz(i, s_abm, double, kP_abm);
+   vetor(i, double, x_ab);
+   vetor(i, double, P_ab);
 
    /* ***
    Zerar coeficientes que poderiam atrapalhar o calculo
