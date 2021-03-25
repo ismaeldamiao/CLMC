@@ -78,7 +78,7 @@ A nível de exemplo, suponha que ao executar o programa o diretório de dados qu
 
 * Para plotar os dados referentes a uma unica semente (por exemplo, que vale `1`) use:
 ```bash
-bash ../scripts/plot.sh energia_1.dat dispersao_1.dat
+bash ../scripts/plot.sh 1
 ```
 
 * Se você rodou várias sementes, antes de plotar tire a média delas:
