@@ -5,13 +5,13 @@ source info.txt
 if [ -e "energia_*.dat.dat" ]; then
    ENERGIA="energia_*.dat.dat"
 else
-   ENERGIA="${1}"
+   ENERGIA="energia_${1}.dat"
 fi
 
 if [ -e "dispersao_*.dat.dat" ]; then
    DISPERSAO="dispersao_*.dat.dat"
 else
-   DISPERSAO="${2}"
+   DISPERSAO="dispersao_${1}.dat"
 fi
 
 gnuplot <<EOF
