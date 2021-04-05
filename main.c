@@ -48,9 +48,9 @@ int main(int argc, char *argv[]){
    int ESTADO, n;
    long int semente;
 
-   if(argc < 2) semente = 1;
+   if(argc < 2) semente = 1L;
    else semente = atol(argv[1]);
-   if(semente < 1) semente = -semente;
+   if(semente < 1L) semente = -semente;
 
    /* **************************************************************************
       Primeiro preparo o sistema fisico
