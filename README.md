@@ -1,8 +1,8 @@
 [![Tip Me via PayPal](https://img.shields.io/badge/PayPal-tip%20me-green.svg?logo=paypal)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=D66EM3DGU35EE&source=url)
 [![LICENSE](https://img.shields.io/badge/license-MIT-lightgrey.svg)](/LICENSE)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/ismaeldamiao/libdamiao)
-![GitHub Release Date](https://img.shields.io/github/release-date/ismaeldamiao/libdamiao)
-![GitHub last commit](https://img.shields.io/github/last-commit/ismaeldamiao/libdamiao)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/ismaeldamiao/CLMC)
+![GitHub Release Date](https://img.shields.io/github/release-date/ismaeldamiao/CLMC)
+![GitHub last commit](https://img.shields.io/github/last-commit/ismaeldamiao/CLMC)
 
 # CLMC
 Cadeia Linear de Massas Correlacionadas
