@@ -1,10 +1,12 @@
 /* *****************************************************************************
-   Funcao para calcular a forca sobre a n-esima particula
+   Esta funcao calcula a forca imprimida ah n-esima particula da cadeia.
+
+   Para mais detalhes veja a equacao 3 do arquivo CLMC.pdf
    *****************************************************************************
    E-mail: ismaellxd@gmail.com
    Site: https://ismaeldamiao.github.io/
    *****************************************************************************
-   Copyright © 2020 Ismael Damião
+   Copyright (c) 2020 I.F.F. dos SANTOS (Ismael Damiao)
 
    Permission is hereby granted, free of charge, to any person obtaining a copy 
    of this software and associated documentation files (the “Software”), to 
@@ -24,16 +26,25 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
    IN THE SOFTWARE.
 ***************************************************************************** */
-double forca(int n, double xe, double x, double xd){
-   int i = n + 1;
-   double aux[4] = {xd - x, x - xe, 0.0, 0.0};
+#include "../CLMC.h"
+
+double __forca(int n, double xe, double x, double xd){
+   int i;
+   double aux[4];
+
+   i = n - 1;
+   /* Distancia entre particulas. */
+   aux[0] = x - xe;
+   aux[1] = xd - x;
+   /* Distancia ao quadrado. */
    aux[2] = aux[0]*aux[0];
    aux[3] = aux[1]*aux[1];
+
    return
-   eta[i][0] * aux[0] +
-   eta[i][1] * aux[2] +
-   eta[i][2] * aux[2]*aux[0] -(
-   eta[n][0] * aux[1] +
-   eta[n][1] * aux[3] +
-   eta[n][2] * aux[3]*aux[1]);
+   cadeia[n].acoplamento_linear * aux[1] +
+   cadeia[n].acoplamento_quadratico * aux[3] +
+   cadeia[n].acoplamento_cubico * aux[3]*aux[1] -(
+   cadeia[i].acoplamento_linear * aux[0] +
+   cadeia[i].acoplamento_quadratico * aux[2] +
+   cadeia[i].acoplamento_cubico * aux[2]*aux[0]);
 }

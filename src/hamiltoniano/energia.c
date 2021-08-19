@@ -1,10 +1,12 @@
 /* *****************************************************************************
-   Funcao para calcular a energia na n-esima particula
+   Esta funcao calcula a energia da n-esima particula da cadeia.
+
+   Para mais detalhes veja a equacao 1 do arquivo CLMC.pdf
    *****************************************************************************
    E-mail: ismaellxd@gmail.com
    Site: https://ismaeldamiao.github.io/
    *****************************************************************************
-   Copyright © 2020 Ismael Damião
+   Copyright (c) 2020 I.F.F. dos SANTOS (Ismael Damiao)
 
    Permission is hereby granted, free of charge, to any person obtaining a copy 
    of this software and associated documentation files (the “Software”), to 
@@ -24,15 +26,30 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
    IN THE SOFTWARE.
 ***************************************************************************** */
-const double __um_sexto__ = 1.0/6.0;
-double energia(int n){
-   int i = n + 1;
-   double aux[4] = {x[i] - x[n], x[n] - x[n-1], 0.0, 0.0};
+#include "../CLMC.h"
+
+double __energia(int n){
+   int i;
+   double aux[4];
+
+   i = n - 1;
+   /* Distancia entre particulas. */
+   aux[0] = cadeia[n].posicao - cadeia[i].posicao;
+   aux[1] = cadeia[n+1].posicao - cadeia[n].posicao;
+   /* Distancia ao quadrado. */
    aux[2] = aux[0]*aux[0];
    aux[3] = aux[1]*aux[1];
+
    return
-   0.5 * P[n] * P[n] / M[n] +
-   (eta[i][0] * aux[2] + eta[n][0] * aux[3]) * 0.25 +
-   (eta[i][1] * aux[2]*aux[0] + eta[n][1] * aux[3]*aux[1]) * __um_sexto__ +
-   (eta[i][2] * aux[2]*aux[2] + eta[n][2] * aux[3]*aux[3]) * 0.125;
+   /* Termo de energia cinetica. */
+   0.5 * cadeia[n].momento * cadeia[n].momento / cadeia[n].massa +
+   /* Termo do potencial quadratico. */
+   (cadeia[i].acoplamento_linear * aux[2] +
+   cadeia[n].acoplamento_linear * aux[3]) * 0.25 +
+   /* Termo do potencial cubico. */
+   (cadeia[i].acoplamento_quadratico * aux[2]*aux[0] +
+   cadeia[n].acoplamento_quadratico * aux[3]*aux[1]) * 0.16666666666666666666 +
+   /* Termo do potencial quartico. */
+   (cadeia[i].acoplamento_cubico * aux[2]*aux[2] +
+   cadeia[n].acoplamento_cubico * aux[3]*aux[3])* 0.125;
 }

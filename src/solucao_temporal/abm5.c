@@ -25,87 +25,72 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
    IN THE SOFTWARE.
 ***************************************************************************** */
-/* *****************************************************************************
-   Definicoes
-***************************************************************************** */
-/* Dicretiacao do Runge-Kutta */
+#include "../CLMC.h"
+#include "../libdamiao/damiao.h"
+//#include <stdio.h>
+
+/* Esta eh a discretizacao */
 #define dt 5.0e-3
+
+/* Notacao mais simples para as variaveis. Aqui a notacao descritiva eh deveras
+   inconveniente pois deixa os argumentos desnecessariamente longos e feios. */
+#define x(n) cadeia[n].posicao
+#define P(n) cadeia[n].momento
+
+#define s 35
+#define s_abm 5
 /* *****************************************************************************
    Funcao do calculo numerico
 ***************************************************************************** */
 int abm5(void){
 
-   /* Contadores */
-   int i, j, l, n, contador = 0;
-   const int contadorMAX = (int)(2.0/dt);
-   /* Medidas de localizacao */
-   double *f;
-   /* Runge-Kutta */
-   const int s = 35, s_abm = 5; /* Quantidade de estagios */
-   double **kP, **kX, **coef;
-   double **kP_abm, **kX_abm, *x_ab, *P_ab;
-   double a[s][s], b[s], c[s];
-   double t;
-   const double tf = 0.4 * (double)N;
-   /* Tamanho 'dinamico' da cadeia */
-   int n0 = 1, nf = N;
-   /* Energia e hamiltoniano */
-   double H;
-   /* *** */
-   const int N2 = N/2;
-   double aux;
-   double adams[2][s_abm] = 
-   {
+   int status, i, j, l, n, contador, contadorMAX, n0, nf;
+   double t, tf, **kX, **kP, **coef, **kP_abm, **kX_abm, *x_ab, *P_ab;
+   long double a[s][s], b[s];
+   long double adams[2][s_abm] = {
       // Coeficientes de Adams–Bashforth
       {251.0/720.0, -1274.0/720.0, 2616.0/720.0, -2774.0/720.0, 1901.0/720.0},
       // Coeficientes de Adams–Moulton
       {-19.0/720.0, 106.0/720.0, -264.0/720.0, 646.0/720.0, 251.0/720.0}
    };
 
+   contador = 0;
+   contadorMAX = (int)(2.0/dt);
 
-   /* **********
-      Ler a matriz de Runge-Kutta
-   ********** */
-   #include"rk14.h"
-   for(i = 0; i < s; ++i){
-      b[i] *= dt;
-      for(j = 0; j < s; ++j) a[i][j] *= dt;
+
+   /* Para economizar tempo e resursos, a cadeia possui limites de calculo,
+      as equacoes nao serao resolvidas para particulas fora desse limite. Caso
+      o pacote de energia se aproxime desse limite entao ele serah eventualmente
+      redefinido para outro limite onde o pacote de energia ainda nao chegou. */
+   if(N > 600){
+      const int N2 = N/2;
+      n0 = N2 - 300;
+      nf = N2 + 300;
+   }else{
+      n0 = 1;
+      nf = N;
    }
 
-
-   /* **********
-      A cadeia possui um temanho dinamico da seguinte forma:
-      Se a energia nos sitios n0 e nf for pequena, quase nula, entao
-      entende-se que nao ha grande interferencia na dinamica do sistema
-      por parte desses sitios.
-      Se essa energia for rezoavelmente diferente de zero entao entao
-      o tamanho da cadeia irah crezcer mudando os valores de n0 e nf para
-      valores onde novamente essa energia pode ser considerada nula.
-   ********** */
-   #if N > 600
-   n0 = N2 - 300;
-   nf = N2 + 300;
-   #endif
-
-
-   /* ***
-   Alocar memoria para os vetores
-   *** */
+   /* Alocar memoria para os vetores */
    i = N+2;
-   vetor(i, double, E);
-   vetor(i, double, f);
-   matriz(i, s+1, double, kX);
-   matriz(i, s+1, double, kP);
-   matriz(i, 2, double, coef);
-   matriz(i, s_abm, double, kX_abm);
-   matriz(i, s_abm, double, kP_abm);
-   vetor(i, double, x_ab);
-   vetor(i, double, P_ab);
+   kX = matriz(i, s+1);
+   kP = matriz(i, s+1);
+   kX_abm = matriz(i, s_abm);
+   kP_abm = matriz(i, s_abm);
+   coef = matriz(i, 2);
+   x_ab = vetor(i);
+   P_ab = vetor(i);
 
-   /* ***
-   Zerar coeficientes que poderiam atrapalhar o calculo
-   *** */
+
+   for(i = 0; i < s; ++i){
+      b[i] = __rk14_b[i] * dt;
+      for(j = 0; j < s; ++j) a[i][j] = __rk14_a[i][j] * dt;
+   }
+
    for(n = 0; n <= N; ++n) coef[n][0] = coef[n][1] = 0.0;
+
+   /* O tempo final de calculo depende das suas necessidades na pesquisa */
+   tf = 0.4 * (double)N;
 
 
    for(l = 0; l < s_abm; ++l){
@@ -123,20 +108,20 @@ int abm5(void){
             }
          }
          for(n = n0; n <= nf; ++n){
-            kP[n][i] = forca(n,
-            x[n-1] + coef[n-1][0], x[n] + coef[n][0], x[n+1] + coef[n+1][0]);
-            kX[n][i] = velocidade(n, P[n] + coef[n][1]);
+            kP[n][i] = __forca(n,
+            x(n-1) + coef[n-1][0], x(n) + coef[n][0], x(n+1) + coef[n+1][0]);
+            kX[n][i] = __velocidade(n, P(n) + coef[n][1]);
          }
       }
       for(n = n0; n <= nf; ++n){
          for(i = 0; i < s; ++i){
-            P[n] += b[i] * kP[n][i];
-            x[n] += b[i] * kX[n][i];
+            P(n) += b[i] * kP[n][i];
+            x(n) += b[i] * kX[n][i];
          }
       }
       for(n = n0; n <= nf; ++n){
-         kP_abm[n][l] = forca(n, x[n-1], x[n], x[n+1]);
-         kX_abm[n][l] = velocidade(n, P[n]);
+         kP_abm[n][l] = __forca(n, x(n-1), x(n), x(n+1));
+         kX_abm[n][l] = __velocidade(n, P(n));
       }
    }
    j = s_abm-1;
@@ -151,16 +136,16 @@ int abm5(void){
             P_ab[n] += adams[0][i] * kP_abm[n][i];
             x_ab[n] += adams[0][i] * kX_abm[n][i];
          }
-         P_ab[n] = P[n] + P_ab[n] * dt;
-         x_ab[n] = x[n] + x_ab[n] * dt;
+         P_ab[n] = P(n) + P_ab[n] * dt;
+         x_ab[n] = x(n) + x_ab[n] * dt;
       }
       for(n = n0; n <= nf; ++n){
          for(i = 0; i < j; ++i){
             kP_abm[n][i] = kP_abm[n][i+1];
             kX_abm[n][i] = kX_abm[n][i+1];
          }
-         kP_abm[n][j] = forca(n, x_ab[n-1], x_ab[n], x_ab[n+1]);
-         kX_abm[n][j] = velocidade(n, P_ab[n]);
+         kP_abm[n][j] = __forca(n, x_ab[n-1], x_ab[n], x_ab[n+1]);
+         kX_abm[n][j] = __velocidade(n, P_ab[n]);
       }
       for(n = n0; n <= nf; ++n){ //AM
          P_ab[n] = 0.0;
@@ -169,68 +154,35 @@ int abm5(void){
             P_ab[n] += adams[1][i] * kP_abm[n][i];
             x_ab[n] += adams[1][i] * kX_abm[n][i];
          }
-         P[n] += P_ab[n] * dt;
-         x[n] += x_ab[n] * dt;
+         P(n) += P_ab[n] * dt;
+         x(n) += x_ab[n] * dt;
       }
-      /* ***********************************************************************
-         Rotina para calcular as medidas de localizacao
-      *********************************************************************** */
-      if(++contador > contadorMAX){
+
+      if(++contador >= contadorMAX){
          contador = 0;
-         /* ***
-         Calculo do hamiltoniano
-         *** */
-         H = 0.0;
-         for(n = 1; n <= N; ++n){
-            E[n] = energia(n);
-            H += E[n];
-         }
 
-         /* ***
-         Verificar se nao houve problema de numero ilegal ou falta de precisao
-         *** */
-         if(H != H){
-            fprintf(stderr, "Algum calculo resultou em nan (=nao eh numero)\n");
-            return CLMC_ERRO_NAN;
+         /* Uma vez que se encontrou a solucao numerica das equacoes em um
+            dado tempo t, podemos fazer algumas analises desses dados. Essas
+            analises serao feitas pela funcao __escrever_arquivos. */
+         status = __escrever_arquivos(t);
+         if(status != CLMC_SUCESSO) return status;
+         
+         //printf("OK\n");
+         if(N > 600){
+            if(
+               (cadeia[n0].energia > 1.0e-20) || (cadeia[nf].energia > 1.0e-20)
+            ){
+               /* Esta rotina cresce o tamanho dos limites de calculo da cadeia
+                  conforme o pacote de energia se aproxima desses limites. */
+               if((nf+30) < N){
+                  n0 -= 30;
+                  nf += 30;
+               }else{
+                  n0 = 1;
+                  nf = N;
+               }
+            }
          }
-         if(fabs(1.0 - H / H0) > 1.0e-8){
-            fprintf(stderr, "Falta de precisao nos calculos\n");
-            return CLMC_ERRO_PRECISAO;
-         }
-
-         /* ***
-            Calcular fracao da energia total no sitio n para cada n
-         *** */
-         for(n = 1; n <= N; ++n) f[n] = E[n] / H0;
-
-         /* ***
-            Calcular dispersao da energia na cadeia
-         *** */
-         sigma = Z = 0.0;
-         for(n = 1; n <= N; ++n){
-            aux = (double)(n - N2);
-            sigma += aux * aux * f[n];
-            Z += f[n]*f[n];
-         }
-         sigma = sqrt(sigma);
-
-         #if N > 600
-         /* ***
-            Crescer tamanho da cadeia caso energia nas bordas seja relevante
-         *** */
-         if((E[n0] > 1.0e-20) || (E[nf] > 1.0e-20)){
-            n0 -= 30; nf += 30;
-         }
-         /* Para garantir que a sub-cadeia nao fique maior que a cadeia */
-         if(nf > N){
-            n0 = 1; nf = N;
-         }
-         #endif
-
-         /* ***
-         Ver arquivo CLMC_arquivos.c
-         *** */
-         EscreverArquivos(t);
       }
    }
    return CLMC_SUCESSO;

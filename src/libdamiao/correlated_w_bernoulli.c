@@ -1,14 +1,15 @@
 /* *****************************************************************************
-   Esta funcao gera massas correlacionadas para cada particula da cadeia,
-   eh possivel usar pelo menos tres tipos de estrategias para gerar correlacao:
-   * transformada_de_Fourrier: Usa uma transformada de Fourrier para...
-   * mapa_de_Bernoulli:
-   * nao_sei_como_chamar_kkk:
+   Function to compute a set of N correlated numbers using a Bernoulli map
+   defined as
+
+   X_i =
+
+   Where 
    *****************************************************************************
    E-mail: ismaellxd@gmail.com
    Site: https://ismaeldamiao.github.io/
    *****************************************************************************
-   Copyright (c) 2020 I.F.F. dos SANTOS (Ismael Damiao)
+   Copyright (c) 2021 I.F.F. dos SANTOS (Ismael Damiao)
 
    Permission is hereby granted, free of charge, to any person obtaining a copy 
    of this software and associated documentation files (the “Software”), to 
@@ -28,17 +29,33 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
    IN THE SOFTWARE.
 ***************************************************************************** */
-#include "../CLMC.h"
+#include "./damiao.h"
 
-void __acoplamentos(void){
+double *correlated_w_bernoulli(double alpha, int N, int seed){
+#if defined(UINT64_MAX)
+   uint64_t idum;
+#elif defined(UINT32_MAX)
+   uint32_t idum;
+#else
+   unsigned int idum;
+#endif
    int i;
+   double aux, *X, b, caux;
+
+   aux = 0.0;
+   b = 1.0e-12;
+   caux = pow(2.0, alpha-1.0) * (1.0 - 2.0 * b);
+   idum = seed;
+
+   X = (double*)malloc((size_t)((N) * sizeof(double)));
+
+   X[0] = random(&idum);
    for(i = 1; i < N; ++i){
-      cadeia[i].acoplamento_linear = config.termo_de_acoplamento_linear;
-      cadeia[i].acoplamento_quadratico = config.termo_de_acoplamento_quadratico;
-      cadeia[i].acoplamento_cubico = config.termo_de_acoplamento_cubico;
+      if((X[i-1] >= 0.0) && (X[i-1] < 0.5))
+         aux = pow(X[i-1], alpha);
+      else if(X[i-1] >= 0.5)
+         aux = -pow(1.0 - X[i-1], alpha);
+      X[i] = X[i-1] + caux * aux + b;
    }
-   cadeia[0].acoplamento_linear = cadeia[N].acoplamento_linear = 0.0;
-   cadeia[0].acoplamento_quadratico = cadeia[N].acoplamento_quadratico = 0.0;
-   cadeia[0].acoplamento_cubico = cadeia[N].acoplamento_cubico = 0.0;
-   return;
+   return X;
 }

@@ -4,7 +4,7 @@
    E-mail: ismaellxd@gmail.com
    Site: https://ismaeldamiao.github.io/
    *****************************************************************************
-   Copyright © 2020 Ismael Damião
+   Copyright (c) 2020 I.F.F. dos SANTOS (Ismael Damiao)
 
    Permission is hereby granted, free of charge, to any person obtaining a copy 
    of this software and associated documentation files (the “Software”), to 
@@ -27,70 +27,119 @@
 #ifndef CLMC_H
 #define CLMC_H 0
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
+/* Essa estrutura guarda informacoes fisicas sobre uma particula, mais adiante
+   irei declarar uma cadeia cheia de particulas como sendo um vetor (array)
+   do tipo 'particula' (nome que dei para a estrutura). */
+typedef struct __particula {
+   double massa;
+   double posicao;
+   double momento;
+   double acoplamento_linear;
+   double acoplamento_quadratico;
+   double acoplamento_cubico;
+   double energia;
+   double densidade_energia;
+} particula;
 
-#define RK4 200
-#define RK8 201
-#define RK14 202
-#define ABM5 203
-#define ABM10 204
-#include "CLMC_configuracao.h"
+/* Agora estou usando 'enum' para listar os tipos de erros que, eventualmente,
+   podem occorer ao executar o programa. Isso eh uma maneira de depurar o
+   programa, isto eh, isso ajuda a identificar possiveis falhas e erros.
+   Por padrao o primeiro item (CLMC_SUCESSO) vale 0, o segundo vale 1, etc...
+   Isso eh interessante pois em sistemas UNIX como Ubuntu ou Android eh comum
+   que um processo retorne um valor diferente de zero sempre que algo dah
+   errado e eh possivel verificar qual eh o valor retornado. */
+enum status {
+   CLMC_SUCESSO,
+   CLMC_ERRO_ARQUIVO,
+   CLMC_ERRO_DE_CONFIGURACAO,
+   CLMC_ERRO_NAN,
+   CLMC_ERRO_PRECISAO
+};
 
-#define CLMC_SUCESSO 0
-#define CLMC_ERRO_ARQUIVO 3
-#define CLMC_ERRO_NAN 4
-#define CLMC_ERRO_PRECISAO 5
+/* Estou enumerando as diferentes maneiras que o programa consegue usar
+   para resolver as equacoes diferenciais alem disso o tipo de variavel
+   'metodos_numericos' irah guardar a informacao do metodo a ser utilizado,
+   a escolha do metodo serah definida no arquivo de configuracao que eh
+   lido ao executar o programa. */
+typedef enum __metodos_numericos {
+   RK4,
+   RK8,
+   RK14,
+   ABM5,
+   ABM10
+} metodos_numericos;
+
+/* Este programa pode usar ate tres ataques matematicos diferentes para gerar
+   correlacoes, correlacoes podem ser utilizadas para gerar massas aleatorias
+   correlacionadas. */
+typedef enum __series_de_correlacao {
+   transformada_de_Fourrier,
+   mapa_de_Bernoulli,
+   nao_sei_como_chamar_kkk
+} series_de_correlacao;
+
+/* As condicoes iniciais, os valores dos parametros e demais caracteristicas
+   do sistema sao informadas atravez de um arquivo de configuracao,
+   este struct guarda essas configuracoes. */
+typedef struct __configuracao {
+   int quantidade_de_particulas;
+   metodos_numericos metodo_de_solucao;
+   series_de_correlacao correlacao_das_massas;
+   double fator_de_correlacao;
+   double termo_de_acoplamento_linear;
+   double termo_de_acoplamento_quadratico;
+   double termo_de_acoplamento_cubico;
+   double velocidade_inicial;
+} configuracao;
+
 /* *****************************************************************************
-   Formulas, constantes e funcoes matematicas
+   Declaracao das funcoes e variaveis
 ***************************************************************************** */
+
 #define DeltaDeKronecker(x, y) ((x) != (y) ? 0.0 : 1.0)
-#define MAX(x, y) ((x) > (y) ? (x) : (y))
-#define MIN(x, y) ((x) < (y) ? (x) : (y))
-#ifndef abs
-   #define abs(x) ((x) >= 0 ? (x) : -(x))
-#endif
-#ifndef M_PI
-   #define M_PI 3.14159265358979323846
-#endif
 
-/* *****************************************************************************
-   Funcoes do Numerical Recipes
-***************************************************************************** */
-#include "numerical_recipes/ran1.c"
-#include "numerical_recipes/tqli.c"
-#include "numerical_recipes/alocar.c"
-/* *****************************************************************************
-   Funcoes que preparam o sistema fisico
-***************************************************************************** */
-#include "sistema_inicial/massas.c"
-#include "sistema_inicial/acoplamentos.c"
-#include "sistema_inicial/posicoes.c"
-#include "sistema_inicial/momentos.c"
-/* *****************************************************************************
-   Funcoes relacionadas com o hamiltoniano ou com suas equacoes
-***************************************************************************** */
-#include "hamiltoniano/energia.c"
-#include "hamiltoniano/forca.c"
-#include "hamiltoniano/velocidade.c"
-/* *****************************************************************************
-   Funcoes para administrar os arquivos de dados
-***************************************************************************** */
-#include "CLMC_arquivos.c"
-/* *****************************************************************************
-   Funcoes para resolver a evolucao temporal do sistema fisico
-***************************************************************************** */
-#if __METODO__ == RK4
-   #include "solucao_temporal/rk4.c"
-#elif __METODO__ == RK8
-   #include "solucao_temporal/rk8.c"
-#elif __METODO__ == RK14
-   #include "solucao_temporal/rk14.c"
-#elif __METODO__ == ABM5
-   #include "solucao_temporal/abm5.c"
-#elif __METODO__ == ABM10
-   #include "solucao_temporal/abm10.c"
-#endif
+/* Cadeia serah uma array externa, uma variavel comum a todos os arquivos do
+   programa. Nela serao guardadas as informacoes das particulas em uma
+   cadeia classica unidimencional. */
+/* Variaveis globais, isto eh, comum a todos os arquivos. */
+extern particula *cadeia;
+extern configuracao config;
+extern double H0;
+extern int N;
+
+particula *cadeia;
+configuracao config;
+double H0;
+int N;
+
+/* Funcoes para alocar memoria para as arrays. */
+double *vetor(int);
+double **matriz(int,int);
+particula *vetorp(int);
+
+configuracao ler_configuracao(void);
+void __abrir_arquivos(configuracao,int,const char*, ...);
+void __fechar_arquivos(void);
+int __escrever_arquivos(double);
+
+/* Funcoes que preparam o sistema fisico (veja arquivos) */
+void __massas(int);
+void __posicoes(void);
+void __momentos(void);
+void __acoplamentos(void);
+
+/* Funcoes relacionadas com o hamiltoniano. */
+double __energia(int);
+double __forca(int,double,double,double);
+/* Esta funcao calcula a velocidade da n-esima particula da cadeia.
+   Para mais detalhes veja a equacao 2 do arquivo CLMC.pdf */
+#define __velocidade(n, P) ((P) / cadeia[n].massa)
+
+/* Funcoes que resolvem numericamente as equacoes de Hamilton. */
+int rk4(void);
+int rk8(void);
+int rk14(void);
+int abm5(void);
+int abm10(void);
 
 #endif // CLMC_H

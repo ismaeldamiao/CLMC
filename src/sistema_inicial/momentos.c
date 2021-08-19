@@ -1,10 +1,10 @@
 /* *****************************************************************************
-   Funcao para definir os momentos iniciais das massas
+   Esta funcao escreve as massas de cada particula da cadeia.
    *****************************************************************************
    E-mail: ismaellxd@gmail.com
    Site: https://ismaeldamiao.github.io/
    *****************************************************************************
-   Copyright © 2020 Ismael Damião
+   Copyright (c) 2020 I.F.F. dos SANTOS (Ismael Damiao)
 
    Permission is hereby granted, free of charge, to any person obtaining a copy 
    of this software and associated documentation files (the “Software”), to 
@@ -24,11 +24,13 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
    IN THE SOFTWARE.
 ***************************************************************************** */
-double *__momentos__(){
-   int n;
-   double *P;
-   vetor(N+2, double, P);
-   const int N2 = N/2;
-   for(n = 1; n <= N; ++n) P[n] = M[n] * __V0__ * DeltaDeKronecker(n, N2);
-   return P;
+#include "../CLMC.h"
+
+void __momentos(void){
+   int n, N2 = N/2;
+   for(n = 1; n <= N; ++n)
+   cadeia[n].momento = cadeia[n].massa * config.velocidade_inicial *
+   DeltaDeKronecker(n, N2);
+   cadeia[0].momento = cadeia[N+1].momento = 0.0;
+   return;
 }

@@ -1,0 +1,324 @@
+%   Copyright (c) 2020 I.F.F. dos SANTOS (Ismael Damiao)
+
+%   Permission is hereby granted, free of charge, to any person obtaining a copy 
+%   of this software and associated documentation files (the “Software”), to 
+%   deal in the Software without restriction, including without limitation the 
+%   rights to use, copy, modify, merge, publish, distribute, sublicense, and/or 
+%   sell copies of the Software, and to permit persons to whom the Software is 
+%   furnished to do so, subject to the following conditions:
+
+%   The above copyright notice and this permission notice shall be included in 
+%   all copies or substantial portions of the Software.
+
+%   THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+%   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+%   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+%   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+%   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+%   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
+%   IN THE SOFTWARE.
+
+\documentclass[
+   % -- opções da classe memoir --
+   article,                      % indica que é um artigo acadêmico
+   10pt,                         % tamanho da fonte.
+   openright,                    % capítulos começam em pág ímpar (insere página vazia caso preciso).
+   oneside,                      % para impressão em recto. Oposto a toweside.
+   a4paper,                      % tamanho do papel. 
+   sumario = tradicional,        % Para indentar os sumários
+	% -- opções da classe abntex2 --
+	chapter=TITLE,		% títulos de capítulos convertidos em letras maiúsculas
+	section=TITLE,		% títulos de seções convertidos em letras maiúsculas
+	subsection=TITLE,	% títulos de subseções convertidos em letras maiúsculas
+	subsubsection=TITLE,% títulos de subsubseções convertidos em letras maiúsculas
+   % -- opções do pacote babel --
+   english,                      % idioma adicional para hifenização.
+   french,                       % idioma adicional para hifenização.
+   spanish,                      % idioma adicional para hifenização.
+   brazil,                       % O último idioma é o principal do documento.
+   xcolor=table                  % Tabelas coloridadas.
+]{abntex2}
+% --------------------------------------
+% PACOTES
+% --------------------------------------
+\input{packages.tex}
+
+% --------------------------------------
+% Informações de dados para CAPA e FOLHA DE ROSTO
+% --------------------------------------
+% Nesta parte ainda não são permitidos acentos, segue um dicionário
+% cedilha ç = \c{c}, Ç = \c{C}
+% agudo á = \'{a}, Á = \'{A}
+% agudo é = \'{e}, É = \'{E}
+% agudo í = \'{i}, Í = \'{I}
+% agudo ó = \'{o}, Ó = \'{O}
+% agudo ú = \'{u}, Ú = \'{U}
+\titulo{CLMC - Cadeia Linear de Massas Correlacionadas}
+\autor{
+   I.F.F. dos SANTOS\thanks{\href{mailto:ismael.santos@fis.ufal.br}{ismael.santos@fis.ufal.br}, \imprimirinstituicao.}
+}
+\local{Maceió}
+\instituicao{Grupo de Propriedades de Transporte em Sistemas de Baixa Dimensionalidade}
+
+% informações do PDF
+\hypersetup{
+   portuguese,
+   pdftitle={\imprimirtitulo}, 
+   pdfauthor={\imprimirautor},
+   pdfcreator={LaTeX with abnTeX2},
+   pdfkeywords={PVI, EDO, C99},
+   %pagebackref=true,
+   bookmarksdepth=4,
+   colorlinks=true,            % false: boxed links; true: colored links
+   linkcolor=blue,             % color of internal links
+   citecolor=blue,             % color of links to bibliography
+   filecolor=mageta,          % color of file links
+   urlcolor=blue
+}
+\makeindex
+
+\begin{document}
+% ------------------------------------------------------------------------------
+% ELEMENTOS PRÉ-TEXTUAIS
+% ------------------------------------------------------------------------------
+\maketitle
+
+\begin{resumoumacoluna}
+   Este texto explica o modelo matemático dos sistemas que o programa
+   \texttt{CLMC} é capaz de simular, além de fornecer instruções sobre como
+   usar o programa. Devo explicar que este é um programa didático e espero
+   que sirva de consulta para aqueles que pretendem escrever um programa
+   para simular um sistema físico onde o principal desafio é
+   resolver equações diferenciais. Me esforcei para que o programa seja
+   portátil de modo que para o usar basta possiur algum compilador
+   compatível com a versão publicada em 1999 da linguagem de programação
+   \texttt{C}, carinhosamente chamada de \texttt{C99}. Para além das bibliotecas
+   padão do \texttt{C99} o programa conta com uma cópia da biblioteca
+   \texttt{libdamiao},\cite{libdamiao} que é compilada junto com o programa.
+\end{resumoumacoluna}
+
+% ------------------------------------------------------------------------------
+% ELEMENTOS TEXTUAIS
+% ------------------------------------------------------------------------------
+\textual
+
+% -------------------------------------
+% Introdução
+% -------------------------------------
+\section{Introdução}
+
+Sejam uma cadeia linear (clássica) com $N$ partículas, $q_n$ o quanto
+a n-ésima partícula se afastou de sua posição de equilíbrio e $p_n$
+seu respectivo momento linear, sua energia cinética é
+$\displaystyle\frac{p^2_n}{2 m_n}$, onde $m_n$ é a sua massa.
+Agora suponha que a partícula está sujeita a um potencial
+proporcional ao quadrado da distância entre ela e suas visinhas
+da forma
+$\frac{1}{4}[\eta_{(2, n-1)}(q_n - q_{n-1})^2 + \eta_{(2, n)}(q_{n+1} - q_n)^2]$,
+onde $\eta_{(2, n)}>0$ é um termo de acoplamento, este potencial pode
+ser identificado com a \textit{lei de Hooke}, isto é, a força que
+as partículas exercem umas sobre as outras é similar à força que uma mola
+exerce (como se estivessem presas umas às outras por molas).
+Generalizando este conceito para potenciais com o cubo e a quarta potencia temos
+finalmente a energia de uma partícula dada por
+
+\begin{equation}
+E_n = \frac{p_n^2}{2 m_n}
+   + \sum_{i = 2}^{4}
+   \frac{1}{2i}\left[\eta_{(i, n-1)}(q_n - q_{n-1})^i + \eta_{(i, n)}(q_{n+1} - q_n)^i\right]
+\end{equation}
+
+Dessa forma o sistema é conservativo e sua energia total é dada pelo
+hamiltoniano $H = \sum_{n=1}^N E_n$. A partir desse hamiltoniano é
+possível escrever as equações de movimento para o sistema, dadas pelas
+equações de Hamilton
+
+\begin{align}
+\frac{d}{dt} q_n &= \frac{p_n}{m_n}\\
+\frac{d}{dt} p_n &=
+   \sum_{i = 2}^{4}
+   \eta_{(i, n)}(q_{n+1} - q_n)^{i-1} - \eta_{(i, n-1)}(q_n - q_{n-1})^{i-1}
+\end{align}
+
+Dessa forma o objetivo principal do programa \texttt{CLMC} é encontrar uma
+solução numérica para as equações de Hamilton, isto é, encontrar
+os valores das funções $q_n(t)$ e $p_n(t)$ do tempo $t$.
+Por padrão o programa
+\texttt{CLMC}
+considera como condição inicial (no tempo $t=0$) que $q_n(0) = 0$
+e $p_n(0) = m_n v_0 \delta_{(n, N/2)}$
+onde $\delta_{(i, j)}$ é o delta de Kronecker
+e $v_0$ é a velocidade inicial da partícula no meio da cadeia,
+isso equivale a injetar energia cinética no sistema, inicialmente em equilíbrio
+dinâmico, e resolver as equações nos permite estudar como a anergia se espalha
+e como viaja pela cadeia.
+
+Também é importante saber descrever os extremos da cadeia, o programa
+\texttt{CLMC} considera que não há nenhuma interação da primeira e da
+última partícula com o exterior, isso é modelado fazendo
+$q_0 = q_{N+1} = \eta_{(i, 0)} = \eta_{(i, N)} = 0$.
+
+% -------------------------------------
+% Parâmetros
+% -------------------------------------
+\section{Parâmetros}
+
+O sistema físico, tal como foi apresentado na introdução, possui vários
+parâmetros dos quais depende a interação e a propagação de energia injetada na
+cadeia, mais específicamente, os parâmetros são as massas das partículas
+e os termos de acoplamento.
+
+Por padrão o programa
+\texttt{CLMC}
+considera que os termos de acoplamento são os mesmo para todas as partículas,
+dependendo somente do tipo de potencial, isto é,
+$\eta_{(i, n)} = \eta_i$.
+
+Quanto às massas, seus valores são definidos com base em um dos sequintes
+métodos:
+
+\begin{itemize}[nosep]
+   \item Correlações construídas com uma série de Fourier:
+   A série é
+   \begin{equation}
+   V_n = \sum_{i=1}^{N/2} i^{-0.5\alpha}
+   \cos\left (\frac{2\pi n i}{N} + \Phi_i\right )
+   \end{equation}
+   Onde $\Phi_i\in[0,2\pi)$ são números pseudo-aleatórios e $\alpha \geq 0$
+   é um parâmetro que controla o quão correlacionada é a série.
+   A partir dessa serie definimos as massas como
+   \begin{equation}
+   m_n = \left\{\begin{aligned}
+   M_1&\;\;\; \text{se}&        V_n& < -r_1 \\
+   M_2&\;\;\; \text{se}& -r_1 < V_n& < r_2 \\
+   M_3&\;\;\; \text{se}&  r_2 < V_n& < r_3 \\
+   M_4&\;\;\; \text{se}&        V_n& > r_3
+   \end{aligned}\right.
+   \end{equation}
+   Para algum conjunto de valores $0 < r_2 < r_1 < r_3$.
+
+   \item Correlações construídas com uma outra série: A série é
+   \begin{equation}
+   V_n = \sum_{i=1}^{N} \frac{\Phi_i}{
+   \left(\frac{|i-n|}{\alpha}+1\right)^2}
+   \end{equation}
+   Onde $\Phi_i\in[-1,1)$ são números pseudo-aleatórios e $\alpha > 0$
+   é um parâmetro que controla o quão correlacionada é a série.
+   A partir dessa série definimos as massas como
+   \begin{equation}
+   m_n = \left \{\begin{aligned}
+   M_1&\;\;\; \text{se}&        V_n& < -r \\
+   M_2&\;\;\; \text{se}&    -r < V_n& < r \\
+   M_3&\;\;\; \text{se}&      V_n& > r
+   \end{aligned}\right .
+   \end{equation}
+   Para algum valor $r > 0$.
+
+   \item Correlações construídas com um mapa de Bernoulli:
+   Essa é uma sequência iterativa de números iniciada com $V_0 = \Phi$
+   onde $\Phi\in[0, 1)$ é um número pseudo-aleatório, a sequência é
+   \begin{equation}
+   V_n = \left \{\begin{aligned}
+   V_{n-1} + 2^{\alpha-1}\,(1-2b) \,\, V_{n-1}^\alpha + b \;\;\;\;\;\;\;\;&
+   \;\;\;\text{se} \;\; 0 \leq V_{n-1} < 0.5 \\
+   V_{n-1} - 2^{\alpha-1}\,(1-2b) \,\, (1-V_{n-1})^\alpha + b &
+   \;\;\;\text{se} \;\; V_{n-1} \geq 0.5
+   \end{aligned}\right .
+   \end{equation}
+   Onde, por padrão, $b=10^{-12}$ e $\alpha \geq 0$
+   é um parâmetro que controla o quão correlacionada é a sequência.
+   A partir dessa sequência definimos as massas como $m_n = M_0 + V_n$ onde
+   $M_0 > 0$ é uma constante pequena introduzida com o objetivo de evitar massas nulas.
+\end{itemize}
+
+Note que todas as maneiras de gerar correlações utilizam um parâmetro $\alpha$,
+o fator de correlação, de forma que o primeiro estudo que vem à mente é
+verificar como a energia inserida se propaga em diferentes sistemas com
+diferentes fatores de correlação. Note também que não há grandes dificuldades
+em alterar o programa original para que ele também trabalhe com termos
+de acoplamento correlacionados.
+
+% -------------------------------------
+% Medidas de localização
+% -------------------------------------
+\section{Medidas de localização}
+
+Tenho dito que a velocidade inicial $v_0$ que colocamos no centro da cadeia
+é uma energia cinética que injetamos e o programa resolve as equações
+de Hamilton com o objetivo de estudar como a energia se propaga na rede.
+Pois bem, como $H(0)$ é a energia total disponível na cadeia então
+a fração $f_n$ dessa energia que está na n-ésima partícula no tempo t é
+dada por
+
+\begin{equation}
+f_n(t) = \frac{E_n(t)}{H(0)}
+\end{equation}
+
+\noindent
+a partir daí podemos definir $\sigma$ como a quantidade que mede o quanto
+a energia se espalhou na cadeia, essa quantidade é o deslocamento médio
+quadrático definido por
+
+\begin{equation}
+\sigma(t) = \left(\sum_{n=1}^N \left(n - \frac{N}{2}\right)^2 f_n(t) \right)^{1/2}
+\end{equation}
+
+\noindent
+finalmente, irei definir $Z$ como a quantidade cujo o inverso
+estima quantas partículas
+contribuem para o transporte de energia e é dada por
+
+\begin{equation}
+Z(t) = \sum_{n=1}^N f_n^2(t)
+\end{equation}
+
+% -------------------------------------
+% As funções do CLMC
+% -------------------------------------
+\section{As funções do \texttt{CLMC}}
+
+O programa \texttt{CLMC} sorteia os números pseudo-aleatórios usando a função
+\texttt{random}
+da biblioteca \texttt{\citetitle{libdamiao}}. Todas as demais funções utilizadas
+ou são padrão do \texttt{C99} ou são funções do próprio programa \texttt{CLMC}.
+As funções que preparam o sistema físico são:
+
+\begin{itemize}[nosep]
+
+\item \texttt{void \_\_massas(int semente);} ---
+Executa a função que gera um conjunto de valores correlacionados,
+conforme o método e fator de correlação configurados no arquivo
+\texttt{CLMC\_config}, e depois define todas as massas da cadeia.
+\texttt{semente} é um número positivo que servirá de base para inicializar o
+gerador de números pseudo-aleatórios.
+
+\item \texttt{void \_\_posicoes(void);} --- Zera a posição inicial de
+cada partícula.
+
+\item \texttt{void \_\_momentos(void);} --- Zera o momento inicial de
+cada partícula, exceto o da partícula do meio, localizada no sítio $N/2$,
+que deve ser igual à sua respectiva massa vezes uma velocidade inicial
+cujo valor é configurado no arquivo \texttt{CLMC\_config}.
+
+\item \texttt{void \_\_acoplamentos(void);} --- Para cada tipo de potencial
+(quadrático, cúbico ou quártico)
+iguala os termos de acoplamentos
+de todas as partículas, o valor do termo de acoplamento para cada potencial
+é definido no arquivo \texttt{CLMC\_config}.
+\end{itemize}
+
+Após executar as funções acima o programa \texttt{CLMC} calcula a energia
+total do sistema, antes de executar os métodos de solução das equações de Hamilton.
+
+
+% ------------------------------------------------------------------------------
+% ELEMENTOS PÓS-TEXTUAIS
+% ------------------------------------------------------------------------------
+   \postextual
+   % ---------------------------------------------------------------------------
+   % Referências bibliográficas
+   % ---------------------------------------------------------------------------
+   \bibliography{reference}
+
+\end{document}
+

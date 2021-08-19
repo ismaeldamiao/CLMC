@@ -1,14 +1,10 @@
 /* *****************************************************************************
-   Esta funcao gera massas correlacionadas para cada particula da cadeia,
-   eh possivel usar pelo menos tres tipos de estrategias para gerar correlacao:
-   * transformada_de_Fourrier: Usa uma transformada de Fourrier para...
-   * mapa_de_Bernoulli:
-   * nao_sei_como_chamar_kkk:
+   This file contains some intructions for preprocessor to compile MT19937.
    *****************************************************************************
    E-mail: ismaellxd@gmail.com
    Site: https://ismaeldamiao.github.io/
    *****************************************************************************
-   Copyright (c) 2020 I.F.F. dos SANTOS (Ismael Damiao)
+   Copyright (c) 2021 I.F.F. dos SANTOS (Ismael Damiao)
 
    Permission is hereby granted, free of charge, to any person obtaining a copy 
    of this software and associated documentation files (the “Software”), to 
@@ -28,17 +24,22 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
    IN THE SOFTWARE.
 ***************************************************************************** */
-#include "../CLMC.h"
+#include <stdint.h> /* Use C99 or latter */
 
-void __acoplamentos(void){
-   int i;
-   for(i = 1; i < N; ++i){
-      cadeia[i].acoplamento_linear = config.termo_de_acoplamento_linear;
-      cadeia[i].acoplamento_quadratico = config.termo_de_acoplamento_quadratico;
-      cadeia[i].acoplamento_cubico = config.termo_de_acoplamento_cubico;
-   }
-   cadeia[0].acoplamento_linear = cadeia[N].acoplamento_linear = 0.0;
-   cadeia[0].acoplamento_quadratico = cadeia[N].acoplamento_quadratico = 0.0;
-   cadeia[0].acoplamento_cubico = cadeia[N].acoplamento_cubico = 0.0;
-   return;
-}
+#if defined(UINT64_MAX)
+
+#include "./MT19937-64.c"
+#elif defined(UINT32_MAX)
+#include "./MT19937-32.c"
+
+#else
+
+/* Because uint32_t type is optionaly in ISO C99 i use typedef in the case
+   of the implementation do not support uint32_t directly but
+   it may not work properly. */
+#define UINT32_MAX UINT_MAX
+#define UINT32_C(c) c ## U
+typedef unsigned int uint32_t;
+#include "./MT19937-32.c"
+
+#endif /* UINT64_MAX */

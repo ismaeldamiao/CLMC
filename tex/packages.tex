@@ -1,0 +1,252 @@
+% --------------------------------------
+% ETC
+% --------------------------------------
+
+\usepackage[T1]{fontenc}               % Selecao de codigos de fonte.
+\usepackage[utf8x]{inputenc}           % Codificacao do documento (conversão automática dos acentos).
+\usepackage{ucs}                       % Complemento do anterior.
+\usepackage{indentfirst}               % Indenta o primeiro parágrafo
+
+\usepackage[cleanup]{gnuplottex}       % Para uso do GNUPlotTex.
+
+\usepackage{graphicx}                  % Inclusão de figuras.
+\usepackage{wrapfig}                   % Figuras junto com o texto
+\usepackage{float}                     % Para posicionar figuras corretamente.
+\usepackage{subcaption}                % Para legendas nas subfiguras.
+
+\usepackage{amssymb}                   % Para exibir símbolos de conjuntos de números (reais, etc...).
+\usepackage{amsmath}                   % Para adcionar equações
+\usepackage{amsfonts}                  % Fontes para notação matemática. de cada seção.
+
+
+\usepackage{multirow}                  % Para mesclar  linhas nas tabelas.
+\usepackage{microtype}                 % para melhorias de justificação.
+\usepackage{lipsum}                    % para geração de dummy text.
+\usepackage{fancyhdr}                  % Pemite alterações no cabeçalho e rodapé.
+\usepackage{hyperref}                  % Cria formatação automática de PDF.
+\usepackage[hyphenbreaks]{breakurl}    % Quebra de linha em url.
+\usepackage{setspace}                  % Espaço duplo entre parágrafos.
+\usepackage{mdframed}                  % para caixas de texto como na CIP do verso do título
+\usepackage{lettrine}				      % letras capitulares
+
+\usepackage{enumitem}
+
+
+\usepackage[num,overcite]{abntex2cite} % Citações padrão ABNT, em ordem alfabética.
+\citebrackets[]                        % Citações com coxetes.
+
+\usepackage{geometry}                          % Permite configurar as margens da página.
+\geometry{hmargin={3cm,2cm},vmargin={3cm,2cm}} % Margens conforme padrão ABNT
+% ---
+% Pacotes de citações
+% ---
+
+% --------------------------------------
+% Para fluxogramas
+% --------------------------------------
+
+\usepackage{tikz}
+
+\usetikzlibrary{shapes.geometric, arrows}
+\tikzstyle{startstop} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black]
+\tikzstyle{io} = [trapezium, trapezium left angle=70, trapezium right angle=110, minimum width=3cm, minimum height=1cm, text centered, draw=black]
+\tikzstyle{process} = [rectangle, minimum width=3cm, minimum height=1cm, text centered, draw=black]
+\tikzstyle{decision} = [diamond, minimum width=3cm, minimum height=1cm, text centered, draw=black]
+\tikzstyle{conector} = [circle, minimum width=0.5cm, minimum height=0.5cm, text centered, draw=black]
+\tikzstyle{arrow} = [thick,->,>=stealth]
+\tikzstyle{line} = [draw, -latex']
+
+% --------------------------------------
+% Para notação formal de proposições
+% --------------------------------------
+\usepackage{amsthm}
+\usepackage{thmtools}
+\usepackage{tcolorbox}
+
+% Teorema
+\declaretheoremstyle[
+   headfont=\normalfont\bfseries,
+   bodyfont=\normalfont\mdseries,
+   notefont=\normalfont\bfseries,
+   notebraces={. (\slshape}{\upshape)},
+   headpunct={ },
+   qed={ }
+]{EstiloTeorema}
+\declaretheorem[
+   name=Teorema,
+   style=EstiloTeorema
+]{teorema}
+
+% Definicao
+\declaretheorem[
+   name=Defini\c{c}\~{a}o,
+   style=EstiloTeorema
+]{definicao}
+
+% Exemplo
+\declaretheoremstyle[
+   headfont=\normalfont\bfseries,
+   bodyfont=\normalfont\mdseries,
+   notefont=\normalfont\bfseries,
+   notebraces={: }{},
+   headpunct={. },
+   spaceabove=0em,
+   postheadspace=0em,
+   spacebelow=0em,
+   qed=\textnormal{\textemdash}
+]{EstiloExemplo}
+\declaretheorem[
+   name=Exemplo,
+   parent=chapter,
+   style=EstiloExemplo
+]{exemplo}
+
+\declaretheorem[style=plain,name=Axioma,qed=\textnormal{\textemdash}]{axioma}
+
+% --------------------------------------
+% Para notação química
+% --------------------------------------
+
+\usepackage{chemfig}
+\usepackage[version=3]{mhchem}
+
+\newcommand\setpolymerdelim[2]{\def\delimleft{#1}\def\delimright{#2}}
+\def\makebraces[#1,#2]#3#4#5{%
+\edef\delimhalfdim{\the\dimexpr(#1+#2)/2}%
+\edef\delimvshift{\the\dimexpr(#1-#2)/2}%
+\chemmove{%
+\node[at=(#4),yshift=(\delimvshift)]
+{$\left\delimleft\vrule height\delimhalfdim depth\delimhalfdim
+width0pt\right.$};%
+\node[at=(#5),yshift=(\delimvshift)]
+{$\left.\vrule height\delimhalfdim depth\delimhalfdim
+width0pt\right\delimright_{\rlap{$\scriptstyle#3$}}$};}}
+\setpolymerdelim()
+
+% --------------------------------------
+% Para exibição de código fonte
+% --------------------------------------
+
+% see https://en.m.wikibooks.org/wiki/LaTeX/Source_Code_Listings
+
+\usepackage{listings}
+\usepackage{xcolor}
+
+% see https://latexcolor.com/
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{amaranth}{rgb}{0.9, 0.17, 0.31}
+
+\usepackage{caption}
+\DeclareCaptionFont{white}{\color{white}}
+\DeclareCaptionFormat{listing}{\hspace*{-0.4pt}\colorbox{gray}{\parbox{\textwidth}{#1#2#3}}}
+\captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white}
+
+\renewcommand{\lstlistingname}{Código}
+
+\lstdefinestyle{c}{
+    language=C, % the language of the code (can be overrided per snippet)
+    backgroundcolor=\color{white}, % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
+    commentstyle=\color{codegray}, % comment style
+    keywordstyle=\color{blue}\bfseries,
+    stringstyle=\color{amaranth}, % string literal style
+    basicstyle=\ttfamily\scriptsize, % the size of the fonts that are used for the code 
+    numbers=none, % Not use numbers
+    columns=fixed, % Using fixed column width (for e.g. nice alignment)
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=t, % Set caption to top
+    keepspaces=true,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=3, % sets default tabsize to 3 spaces
+    frame=lrb, % adds a frame around the code
+     belowcaptionskip=-1pt,
+     xleftmargin=8pt,
+     framexleftmargin=8pt,
+     framexrightmargin=5pt,
+     framextopmargin=0pt,
+     framexbottommargin=0pt,
+     framesep=0pt,
+     rulesep=0pt
+}
+
+\lstdefinestyle{f90}{
+    language=Fortran, % the language of the code (can be overrided per snippet)
+    backgroundcolor=\color{white}, % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
+    commentstyle=\color{codegray}, % comment style
+    keywordstyle=\color{codegreen}\bfseries,
+    stringstyle=\color{amaranth}, % string literal style
+    basicstyle=\ttfamily\scriptsize, % the size of the fonts that are used for the code 
+    numbers=none, % Not use numbers
+    columns=fixed, % Using fixed column width (for e.g. nice alignment)
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=t, % Set caption to top
+    keepspaces=true,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=3, % sets default tabsize to 3 spaces
+    frame=lrb, % adds a frame around the code
+     belowcaptionskip=-1pt,
+     xleftmargin=8pt,
+     framexleftmargin=8pt,
+     framexrightmargin=5pt,
+     framextopmargin=0pt,
+     framexbottommargin=0pt,
+     framesep=0pt,
+     rulesep=0pt
+}
+% --------------------------------------
+% Texto de caixinha cinza
+% --------------------------------------
+
+%\usepackage[most]{tcolorbox}
+
+\definecolor{textgray}{rgb}{0.7,0.7,0.7}
+\tcbset{
+   on line,
+   boxsep=4pt,
+   left=0pt,
+   right=0pt,
+   top=0pt,
+   bottom=0pt,
+   colframe=white,
+   colback=textgray,
+   fontupper=\normalsize\ttfamily
+}
+
+% --------------------------------------
+% CONFIGURAÇÕES DE PACOTES
+% --------------------------------------
+\newcommand{\cqd}{\hfill {\itshape\bfseries Quod erat demonstrandum.}}
+\newcommand{\asen}{\operatorname{arcsen}\,}
+\newcommand{\sen}{\operatorname{sen}\,}
+\newcommand{\deu}{\partial}
+\newcommand{\adj}{\operatorname{\,adj}\,}
+\renewcommand{\dim}{\operatorname{\,dim}\,}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+
+\newcommand{\M}{\mathcal{M}}
+% Não se importe com essas coisas, no geral, não será preciso mexer nelas
+\renewcommand{\ABNTEXchapterfontsize}{\Large}       %Muda o tamanho da fonte de título de capítulo
+\renewcommand{\ABNTEXchapterfont}{\rmfamily}        %Muda a fonte do título de capítulo
+\renewcommand{\ABNTEXsectionfontsize}{\large}       %Muda o tamanho da fonte de título de seção
+\renewcommand{\cftchapterfont}{\rmfamily}
+\renewcommand{\cftchapterpagefont}{\normalsize\cftchapterfont}
+\renewcommand{\cftsectionfont}{\rmfamily}
+\renewcommand{\cftsectionpagefont}{\cftsectionfont}
+\setlength\afterchapskip{\lineskip}
+
+\newcommand{\bra}[1]{\langle#1|}
+\newcommand{\ket}[1]{|#1\rangle}
+\newcommand{\braket}[2]{\langle#1|#2\rangle}
+\newcommand{\ketbra}[2]{|#1\rangle\langle#2|}
+
+\newcommand{\eq}[1]{\hyperref[eq:#1]{equa\c{c}\~ao} \ref{eq:#1}}

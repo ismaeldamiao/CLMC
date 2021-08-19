@@ -1,0 +1,37 @@
+#!/bin/bash
+
+cd "$(dirname $0)"
+
+# Primeiro eh preciso compilar a API libdamiao e depois mover a biblioteca
+# estatica que serah gerada para o mesmo diretorio do arquivo main.c
+bash ./libdamiao/COMPILE 1>/dev/null 2>&1
+mv ./libdamiao/libdamiao.a ./
+
+# Depois faco uma lista de todos os arquivos que serao compilados
+# e compilo eles criando somente os objetos (arquivos com extensao '.o')
+file="./alloc.c "
+file+="./allocp.c "
+file+="./ler_configuracao.c "
+file+="./sistema_inicial/massas.c "
+file+="./sistema_inicial/posicoes.c "
+file+="./sistema_inicial/momentos.c "
+file+="./sistema_inicial/acoplamentos.c "
+file+="./abrir_arquivos.c "
+file+="./hamiltoniano/energia.c "
+file+="./hamiltoniano/forca.c "
+file+="./solucao_temporal/rk4.c "
+file+="./solucao_temporal/rk8.c "
+file+="./solucao_temporal/rk14.c "
+file+="./solucao_temporal/abm5.c "
+file+="./solucao_temporal/abm10.c "
+
+gcc -c -g $file -std=c99
+
+# Por fim compilo o arquivo main.c e faco o link entre ele e as demais funcoes
+# tanto do CLMC quanto da biblioteca libdamiao
+gcc main.c -std=c99 -o clmc *.o -L./ -ldamiao -lm
+
+# A esta altura nem os objetos nem a biblioteca sao necessarios
+rm ./libdamiao.a ./*.o 
+
+exit 0

@@ -1,10 +1,14 @@
 /* *****************************************************************************
-   Funcoes de correlacao e funcao que define as massas conforme as correlacoes
+   Esta funcao gera massas correlacionadas para cada particula da cadeia,
+   eh possivel usar pelo menos tres tipos de estrategias para gerar correlacao:
+   * transformada_de_Fourrier: Usa uma transformada de Fourrier para...
+   * mapa_de_Bernoulli:
+   * nao_sei_como_chamar_kkk:
    *****************************************************************************
    E-mail: ismaellxd@gmail.com
    Site: https://ismaeldamiao.github.io/
    *****************************************************************************
-   Copyright © 2020 Ismael Damião
+   Copyright (c) 2020 I.F.F. dos SANTOS (Ismael Damiao)
 
    Permission is hereby granted, free of charge, to any person obtaining a copy 
    of this software and associated documentation files (the “Software”), to 
@@ -24,136 +28,55 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
    IN THE SOFTWARE.
 ***************************************************************************** */
-double *MapaBernoulli(long int);
-double *SemNome1(long int);
-double *SemNome2(long int);
+#include "../CLMC.h"
+#include "../libdamiao/damiao.h"
 
-double *__massas__(long int semente){
-   int n;
-   double *M;
-   #if __CRITERIO__ == 1
-      /* **********************************
-         Usando o mapa de Bernoulli para escolher o valor das massas
-      *********************************** */
-      double M0 = 0.5;
-      M = MapaBernoulli(-semente);
-      for(n = 1; n <= N; ++n) M[n] += M0;
-   #elif __CRITERIO__ == 2
-      /* **********************************
-         Serie de correlacao que o autor usou em seu 1o artigo
-      *********************************** */
-      double R[3] = {1.0, 0.1, 1.2}, MassaTipo[4] = {0.5, 1.0, 1.5, 2.0};
-      M = SemNome1(-semente);
-      for(n = 1; n <= N; ++n){
-         if(M[n] < -R[0]){
-            M[n] = MassaTipo[0];
-         }else if(M[n] > -R[0] && M[n] < R[1]){
-            M[n] = MassaTipo[1];
-         }else if(M[n] > R[1] && M[n] < R[2]){
-            M[n] = MassaTipo[2];
+void __massas(int semente){
+   double *V = malloc(sizeof(double*));
+   int n, N;
+
+   N = config.quantidade_de_particulas;
+
+   if(config.correlacao_das_massas == transformada_de_Fourrier){
+      const double R[3] = {1.0, 0.1, 1.2}, MassaTipo[4] = {0.5, 1.0, 1.5, 2.0};
+      V = correlated_w_fourier(config.fator_de_correlacao, N, semente);
+      for(n = 0; n < N; ++n){
+         if(V[n] < -R[0]){
+            V[n] = MassaTipo[0];
+         }else if((V[n] > -R[0]) && (V[n] < R[1])){
+            V[n] = MassaTipo[1];
+         }else if((V[n] > R[1]) && (V[n] < R[2])){
+            V[n] = MassaTipo[2];
          }else{
-            M[n] = MassaTipo[3];  
+            V[n] = MassaTipo[3];  
          }
       }
-   #elif __CRITERIO__ == 3
-      /* **********************************
-         Serie de correlacao que estou usando com o Carlos
-      *********************************** */
-      double b = 0.5, MassaTipo[3] = {0.5, 1.0, 1.5};
-      M = SemNome2(-semente);
-      for(n = 1; n <= N; ++n){
-         if(M[n] < -b){
-            M[n] = MassaTipo[0];
-         }else if(M[n] > b){
-            M[n] = MassaTipo[2];
+   }else if(config.correlacao_das_massas == mapa_de_Bernoulli){
+      const double M0 = 0.5;
+      V =  correlated_w_bernoulli(config.fator_de_correlacao, N, semente);
+      for(n = 0; n < N; ++n)
+      V[n] += M0;
+   }else if(config.correlacao_das_massas == nao_sei_como_chamar_kkk){
+      const double MassaTipo[3] = {0.5, 1.0, 1.5}, r = 0.1;
+      if(config.fator_de_correlacao == 0.0) return;
+      V = correlated_w_bernoulli(config.fator_de_correlacao, N, semente);
+      for(n = 0; n < N; ++n){
+         if(V[n] < -r){
+            V[n] = MassaTipo[0];
+         }else if((V[n] > -r) && (V[n] < r)){
+            V[n] = MassaTipo[1];
          }else{
-            M[n] = MassaTipo[1];
+            V[n] = MassaTipo[2];
          }
       }
-   #else
-      fprintf(stderr, "Criterio de correlacao invalido\n\n");
-      return (double*)NULL;
-   #endif
-   return M;
-}
+   }else{
+      return;
+   }
 
+   for(n = 1; n <= N; ++n)
+      cadeia[n].massa = V[n-1];
+   cadeia[0].massa = cadeia[N+1].massa = 0.0;
+   free(V);
 
-/* *****************************************************************************
-Geradores de correlacoes
-***************************************************************************** */
-double *MapaBernoulli(long int semente){
-   int i;
-   double aux, *X;
-   const double b = 1.0e-12, caux = pow(2.0, __ALPHA__-1.0) * (1.0 - 2.0 * b);
-   
-   vetor(N+2, double, X); /* Alocar memoria */
-   
-   X[0] = ran1(&semente);
-   for(i = 1; i < N; ++i){
-      if((X[i-1] >= 0.0) && (X[i-1] < 0.5)){
-         aux = pow(X[i-1], __ALPHA__);
-      }else{
-         if(X[i-1] >= 0.5){
-            aux = -pow(1.0 - X[i-1], __ALPHA__);
-         }
-      }
-      X[i] = X[i-1] + caux * aux + b;
-   }
-   return X;
-}
-double *SemNome1(long int semente){
-   int Q2 = N/2;
-   double *V, M_PI2 = 2.0 * M_PI;
-   double phi[Q2], aux1 = 0.0, aux2 = 0.0, var, k, Nr = (double)N, iR;
-   
-   vetor(N+2, double, V); /* Alocar memoria */
-   
-   for(int i = 0; i < Q2; ++i){
-      phi[i] = M_PI2 * ran1(&semente);
-   }
-   for(int i = 0; i < N; ++i){
-      V[i] = 0;
-      iR = (double)i;
-      for(int j = 0; j < Q2; ++j){
-         k = (double)j + 1.0;
-         V[i] +=
-         pow(k, -0.5 * __ALPHA__) * cos(M_PI2 * iR * k / Nr + phi[j]);
-      }
-      aux1 += V[i];
-      aux2 += pow(V[i], 2.0);
-   }
-   aux1 /= Nr;
-   aux2 /= Nr;
-   var = sqrt(aux2 + pow(aux1, 2.0));
-   for(int i = 0; i < N; ++i){
-      V[i] = (V[i] - aux1) / var;
-   }
-   return V;
-}
-double *SemNome2(long int semente){
-   double E[N], vmedio, vmedio2, aux;
-   double *V;
-   int i, n;
-   
-   vetor(N+2, double, V); /* Alocar memoria */
-   
-   vmedio = vmedio2 = 0.0;
-   for(i = 1; i <= N; ++i){
-      E[i] = 2.0 * ran1(&semente) - 1.0;
-   }
-   for(n = 1; n <= N; ++n){
-      V[n] = 0.0;
-      for(i = 1; i <= N; ++i){
-         V[n] += E[i] / pow((double)abs(i - n) / __ALPHA__ + 1.0, 2.0);
-      }
-      vmedio += V[n];
-      vmedio2 += V[n] * V[n];
-   }
-   vmedio /= N;
-   vmedio2 /= N;
-   aux = 1.0 / sqrt(vmedio2 - vmedio * vmedio);
-   for(n = 1; n <= N; ++n){
-      V[n] = (V[n] - vmedio) * aux;
-   }
-   return V;
+   return;
 }

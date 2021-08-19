@@ -1,10 +1,11 @@
 /* *****************************************************************************
-   Resolver a EDO usando Runge-Kutta de 14a ordem e 35 estagios
+   Esta funcao resolve as equacoes de Hamilton para o sistema
+   usando o metodo de Runge-Kutta de 14a ordem e 35 estagios.
    *****************************************************************************
    E-mail: ismaellxd@gmail.com
    Site: https://ismaeldamiao.github.io/
    *****************************************************************************
-   Copyright © 2020 Ismael Damião
+   Copyright (c) 2020 I.F.F. dos SANTOS (Ismael Damiao)
 
    Permission is hereby granted, free of charge, to any person obtaining a copy 
    of this software and associated documentation files (the “Software”), to 
@@ -24,77 +25,64 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
    IN THE SOFTWARE.
 ***************************************************************************** */
-/* *****************************************************************************
-   Definicoes
-***************************************************************************** */
-/* Dicretiacao do Runge-Kutta */
+#include "../CLMC.h"
+#include "../libdamiao/damiao.h"
+//#include <stdio.h>
+
+/* Uma caracteristica dos metodos de Runge-Kutta eh que quanto menor for
+   o dt, a discretizacao no tempo, entao melhor serah a aproximacao numerica
+   para a solucao das equacoes de Hamilton. Essa melhora na aproximacao eh
+   conseguida a custo de um maior tempo de calculo. */
 #define dt 1.0e-1
-#define dt2 0.5e-1
+
+/* Notacao mais simples para as variaveis. Aqui a notacao descritiva eh deveras
+   inconveniente pois deixa os argumentos desnecessariamente longos e feios. */
+#define x(n) cadeia[n].posicao
+#define P(n) cadeia[n].momento
+
 /* *****************************************************************************
    Funcao do calculo numerico
 ***************************************************************************** */
 int rk14(void){
 
-   /* Contadores */
-   int i, j, n, contador = 0;
-   const int contadorMAX = (int)(2.0/dt);
-   /* Medidas de localizacao */
-   double *f;
-   /* Runge-Kutta */
-   const int s = 35; /* Quantidade de estagios */
-   double **kP, **kX, **coef;
-   double a[s][s], b[s], c[s];
-   double t;
-   const double tf = 0.4 * (double)N;
-   /* Tamanho 'dinamico' da cadeia */
-   int n0 = 1, nf = N;
-   /* Energia e hamiltoniano */
-   double H;
-   /* *** */
-   const int N2 = N/2;
-   double aux;
+   int status, i, j, n, contador, contadorMAX, n0, nf;
+   double t, tf, **kX, **kP, **coef;
+   const int s = 35;
+   long double a[s][s], b[s];
+
+   contador = 0;
+   contadorMAX = (int)(2.0/dt);
 
 
-   /* **********
-      Ler a matriz de Runge-Kutta
-   ********** */
-   #include"rk14.h"
-   for(i = 0; i < s; ++i){
-      b[i] *= dt;
-      for(j = 0; j < s; ++j) a[i][j] *= dt;
+   /* Para economizar tempo e resursos, a cadeia possui limites de calculo,
+      as equacoes nao serao resolvidas para particulas fora desse limite. Caso
+      o pacote de energia se aproxime desse limite entao ele serah eventualmente
+      redefinido para outro limite onde o pacote de energia ainda nao chegou. */
+   if(N > 600){
+      const int N2 = N/2;
+      n0 = N2 - 300;
+      nf = N2 + 300;
+   }else{
+      n0 = 1;
+      nf = N;
    }
 
-
-   /* **********
-      A cadeia possui um temanho dinamico da seguinte forma:
-      Se a energia nos sitios n0 e nf for pequena, quase nula, entao
-      entende-se que nao ha grande interferencia na dinamica do sistema
-      por parte desses sitios.
-      Se essa energia for rezoavelmente diferente de zero entao entao
-      o tamanho da cadeia irah crezcer mudando os valores de n0 e nf para
-      valores onde novamente essa energia pode ser considerada nula.
-   ********** */
-   #if N > 600
-   n0 = N2 - 300;
-   nf = N2 + 300;
-   #endif
-
-
-   /* ***
-   Alocar memoria para os vetores
-   *** */
+   /* Alocar memoria para os vetores */
    i = N+2;
-   vetor(i, double, E);
-   vetor(i, double, f);
-   matriz(i, s+1, double, kX);
-   matriz(i, s+1, double, kP);
-   matriz(i, 2, double, coef);
+   kX = matriz(i, s+1);
+   kP = matriz(i, s+1);
+   coef = matriz(i, 2);
 
-   /* ***
-   Zerar coeficientes que poderiam atrapalhar o calculo
-   *** */
+
+   for(i = 0; i < s; ++i){
+      b[i] = __rk14_b[i] * dt;
+      for(j = 0; j < s; ++j) a[i][j] = __rk14_a[i][j] * dt;
+   }
+
    for(n = 0; n <= N; ++n) coef[n][0] = coef[n][1] = 0.0;
 
+   /* O tempo final de calculo depende das suas necessidades na pesquisa */
+   tf = 0.4 * (double)N;
 
    for(t = dt; t <= tf; t += dt){
       /* ***********************************************************************
@@ -111,77 +99,44 @@ int rk14(void){
             }
          }
          for(n = n0; n <= nf; ++n){
-            kP[n][i] = forca(n,
-            x[n-1] + coef[n-1][0], x[n] + coef[n][0], x[n+1] + coef[n+1][0]);
-            kX[n][i] = velocidade(n, P[n] + coef[n][1]);
+            kP[n][i] = __forca(n,
+            x(n-1) + coef[n-1][0], x(n) + coef[n][0], x(n+1) + coef[n+1][0]);
+            kX[n][i] = __velocidade(n, P(n) + coef[n][1]);
          }
       }
       for(n = n0; n <= nf; ++n){
          for(i = 0; i < s; ++i){
-            P[n] += b[i] * kP[n][i];
-            x[n] += b[i] * kX[n][i];
+            P(n) += b[i] * kP[n][i];
+            x(n) += b[i] * kX[n][i];
          }
       }
 
-      /* ***********************************************************************
-         Rotina para calcular as medidas de localizacao
-      *********************************************************************** */
-      if(++contador > contadorMAX){
+
+      if(++contador >= contadorMAX){
          contador = 0;
-         /* ***
-         Calculo do hamiltoniano
-         *** */
-         H = 0.0;
-         for(n = 1; n <= N; ++n){
-            E[n] = energia(n);
-            H += E[n];
-         }
 
-         /* ***
-         Verificar se nao houve problema de numero ilegal ou falta de precisao
-         *** */
-         if(H != H){
-            fprintf(stderr, "Algum calculo resultou em nan (=nao eh numero)\n");
-            return CLMC_ERRO_NAN;
+         /* Uma vez que se encontrou a solucao numerica das equacoes em um
+            dado tempo t, podemos fazer algumas analises desses dados. Essas
+            analises serao feitas pela funcao __escrever_arquivos. */
+         status = __escrever_arquivos(t);
+         if(status != CLMC_SUCESSO) return status;
+         
+         //printf("OK\n");
+         if(N > 600){
+            if(
+               (cadeia[n0].energia > 1.0e-20) || (cadeia[nf].energia > 1.0e-20)
+            ){
+               /* Esta rotina cresce o tamanho dos limites de calculo da cadeia
+                  conforme o pacote de energia se aproxima desses limites. */
+               if((nf+30) < N){
+                  n0 -= 30;
+                  nf += 30;
+               }else{
+                  n0 = 1;
+                  nf = N;
+               }
+            }
          }
-         if(fabs(1.0 - H / H0) > 1.0e-8){
-            fprintf(stderr, "Falta de precisao nos calculos\n");
-            return CLMC_ERRO_PRECISAO;
-         }
-
-         /* ***
-            Calcular fracao da energia total no sitio n para cada n
-         *** */
-         for(n = 1; n <= N; ++n) f[n] = E[n] / H0;
-
-         /* ***
-            Calcular dispersao da energia na cadeia
-         *** */
-         sigma = Z = 0.0;
-         for(n = 1; n <= N; ++n){
-            aux = (double)(n - N2);
-            sigma += aux * aux * f[n];
-            Z += f[n]*f[n];
-         }
-         sigma = sqrt(sigma);
-
-         #if N > 600
-         /* ***
-            Crescer tamanho da cadeia caso energia nas bordas seja relevante
-         *** */
-         if((E[n0] > 1.0e-20) || (E[nf] > 1.0e-20)){
-            n0 -= 30; nf += 30;
-         }
-         /* Para garantir que a sub-cadeia nao fique maior que a cadeia */
-         if(nf > N){
-            n0 = 1; nf = N;
-         }
-         #endif
-
-         /* ***
-         Ver arquivo CLMC_arquivos.c
-         *** */
-         EscreverArquivos(t);
       }
    }
    return CLMC_SUCESSO;

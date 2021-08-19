@@ -1,10 +1,10 @@
 /* *****************************************************************************
-   Funcao para definir as posicoes iniciais das massas
+   Esta funcao escreve as massas de cada particula da cadeia.
    *****************************************************************************
    E-mail: ismaellxd@gmail.com
    Site: https://ismaeldamiao.github.io/
    *****************************************************************************
-   Copyright © 2020 Ismael Damião
+   Copyright (c) 2020 I.F.F. dos SANTOS (Ismael Damiao)
 
    Permission is hereby granted, free of charge, to any person obtaining a copy 
    of this software and associated documentation files (the “Software”), to 
@@ -24,10 +24,14 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
    IN THE SOFTWARE.
 ***************************************************************************** */
-double *__posicoes__(void){
-   int n;
-   double *x;
-   vetor(N+2, double, x);
-   for(n = 1; n <= N; ++n) x[n] = 0.0;
-   return x;
+#include "../CLMC.h"
+
+void __posicoes(void){
+   int i, N;
+   N = config.quantidade_de_particulas;
+
+   for(i = 1; i <= N; ++i) cadeia[i].posicao = 0.0;
+   cadeia[0].posicao = cadeia[N+1].posicao = 0.0;
+
+   return;
 }
